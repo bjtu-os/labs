@@ -1,11 +1,10 @@
-# Exercise 1 独立可执行程序
-[TOC]
+# Lab 1 独立可执行程序
 
+## 本节导读
 
+本节我们从一个最简单的 Rust 应用程序入手，不仅仅满足于停留在它的表面，而是深入地挖掘它下面的多层执行环境为它的开发和运行提供了怎样的方便。特别的，操作系统也是一层执行环境，因此它需要为上层的应用程序提供服务。我们会接触到计算机科学中最核心的思想——抽象，同时以现实中不同需求层级的应用为例分析如何进行合理的抽象。最后，我们还会介绍软硬件平台（包括 RISC-V 架构）的一些基础知识。
 
-## Part 1 应用执行与平台支持
-
-### 1.1 创建一个简单的Rust程序
+## 执行应用程序
 
 我们先在Linux上开发并运行一个简单的 “Hello, world” 应用程序，看看一个简单应用程序从开发到执行的全过程。作为一切的开始，让我们使用 Cargo 工具来创建一个 Rust 项目。它看上去没有任何特别之处：
 
@@ -27,8 +26,6 @@ os
 
 其中 `Cargo.toml` 中保存着项目的配置，包括作者的信息、联系方式以及库依赖等等。显而易见源代码保存在 `src` 目录下，目前为止只有 `main.rs` 一个文件，让我们看一下里面的内容：
 
-它是最简单的 Rust 应用
-
 ```rust
 fn main() {
     println!("Hello, world!");
@@ -45,19 +42,68 @@ $ cargo run
 Hello, world!
 ```
 
-如我们预想的一样，我们在屏幕上看到了一行 `Hello, world!` 。
+如我们预想的一样，我们在屏幕上看到了一行 `Hello, world!` 。但是，需要注意到**我们所享受到的编程和执行程序的方便性并不是理所当然的，背后有着从硬件到软件的多种机制的支持。**简而言之，我们使用了操作系统和Rust语言本身提供的许多便捷接口。我们在打印 `Hello, world!` 时使用的 `println!` 宏正是由 Rust 标准库 std 和 GNU Libc 库等提供的。
 
-但是，需要注意到**我们所享受到的编程和执行程序的方便性并不是理所当然的，背后有着从硬件到软件的多种机制的支持。**简而言之，我们使用了操作系统和Rust语言本身提供的许多便捷接口。我们在打印 `Hello, world!` 时使用的 `println!` 宏正是由 Rust 标准库 std 和 GNU Libc 库等提供的。
+从内核/操作系统的角度看来，它上的上层软件的一切操作都属于用户态，而操作系统自身属于内核态。无论用户态应用如何编写，是手写汇编代码，还是基于某种高级编程语言调用其标准库或三方库，某些功能总要直接或间接的通过内核/操作系统提供的 **系统调用** (System Call) 来实现。因此系统调用充当了用户和内核之间的边界。内核作为用户态的执行环境，它不仅要提供系统调用接口，还需要对用户态应用的执行进行监控和管理。
 
-从内核/操作系统的角度看来，它上的上层软件的一切操作都属于用户态，而操作系统自身属于内核态。无论用户态应用如何编写，是手写汇编代码，还是基于某种高级编程语言调用其标准库或三方库，某些功能总要直接或间接的通过内核/操作系统提供的 **系统调用** (System Call) 来实现。
+从硬件的角度来看，它上面的一切都属于软件。硬件可以分为三种： 处理器 (Processor，也称CPU)，内存 (Memory) 还有 I/O 设备。其中处理器无疑是其中最复杂，同时也最关键的一个。它与软件约定一套 **指令集体系结构** (ISA, Instruction Set Architecture)，使得软件可以通过 ISA 中提供的机器指令来访问各种硬件资源。软件当然也需要知道处理器会如何执行这些指令：最简单的话就是一条一条执行位于内存中的指令。当然，实际的情况远比这个要复杂得多，为了适应现代应用程序的场景，处理器还需要提供很多额外的机制（如特权级、页表、TLB、异常/中断响应等），而不仅仅是让数据在 CPU 寄存器、内存和 I/O 设备三者之间流动。
 
-### 1.2 平台
+> 计算机科学中遇到的所有问题都可通过增加一层抽象来解决。
+>
+> All problems in computer science can be solved by another level of indirection。
+>
+> – 计算机科学家 David Wheeler
 
-对于一份用某种编程语言实现的应用程序源代码而言，编译器在将其通过编译、链接得到可执行文件的时候需要知道程序要在哪个 **平台** (Platform) 上运行。这里平台主要是指 CPU 类型、操作系统类型和标准运行时库的组合。由于我们要自己开发操作系统，我们打算基于 **RISC-V 架构而非 x86 系列架构**指令来编译我们的程序，原因在于x86指令非常复杂，对于我们编写的操作系统而言没有必要使用如此复杂的指令集架构，而RISC-V相对简单，且它的这些功能已经足以用来构造一个具有相当抽象能力且可以运行的简洁内核了。
+## 平台与目标三元组
 
-我们如果想编译出不同指令集的代码则需要
+编译器在编译、链接得到可执行文件时需要知道，程序要在哪个 **平台** (Platform) 上运行， **目标三元组** (Target Triplet) 描述了目标平台的 CPU 指令集、操作系统类型和标准运行时库。
 
-在os根目录下的.cargo文件夹(没有就创建)新建config文件，并写入：
+我们研究一下现在 `Hello, world!` 程序的目标三元组是什么：
+
+```shell
+$ rustc --version --verbose
+   rustc 1.61.0-nightly (68369a041 2022-02-22)
+   binary: rustc
+   commit-hash: 68369a041cea809a87e5bd80701da90e0e0a4799
+   commit-date: 2022-02-22
+   host: x86_64-unknown-linux-gnu
+   release: 1.61.0-nightly
+   LLVM version: 14.0.0
+```
+
+其中 host 一项表明默认目标平台是 `x86_64-unknown-linux-gnu`， CPU 架构是 x86_64，CPU 厂商是 unknown，操作系统是 linux，运行时库是 gnu libc。
+
+接下来，我们希望把 `Hello, world!` 移植到 RICV 目标平台 `riscv64gc-unknown-none-elf` 上运行。
+
+> `riscv64gc-unknown-none-elf` 的 CPU 架构是 riscv64gc，厂商是 unknown，操作系统是 none， elf 表示没有标准的运行时库。没有任何系统调用的封装支持，但可以生成 ELF 格式的执行程序。 我们不选择有 linux-gnu 支持的 `riscv64gc-unknown-linux-gnu`，是因为我们的目标是开发操作系统内核，而非在 linux 系统上运行的应用程序。
+
+## 修改目标平台
+
+将程序的目标平台换成 `riscv64gc-unknown-none-elf`，试试看会发生什么：
+
+```shell
+$ cargo run --target riscv64gc-unknown-none-elf
+   Compiling os v0.1.0 (/home/shinbokuow/workspace/v3/rCore-Tutorial-v3/os)
+error[E0463]: can't find crate for `std`
+  |
+  = note: the `riscv64gc-unknown-none-elf` target may not be installed
+```
+
+报错的原因是目标平台上确实没有 Rust 标准库 std，也不存在任何受 OS 支持的系统调用。 这样的平台被我们称为 **裸机平台** (bare-metal)。
+
+幸运的是，除了 std 之外，Rust 还有一个不需要任何操作系统支持的核心库 core， 它包含了 Rust 语言相当一部分核心机制，可以满足本门课程的需求。 有很多第三方库也不依赖标准库 std，而仅仅依赖核心库 core。
+
+为了以裸机平台为目标编译程序，我们要将对标准库 std 的引用换成核心库 core。
+
+## 移除标准库依赖
+
+由于后续实验需要 `rustc` 编译器缺省生成RISC-V 64的目标代码，所以我们首先要给 `rustc` 添加一个target : `riscv64gc-unknown-none-elf` 。这可通过如下命令来完成：
+
+```
+$ rustup target add riscv64gc-unknown-none-elf
+```
+
+然后在 `os` 目录下新建 `.cargo` 目录，并在这个目录下创建 `config` 文件，输入如下内容：
 
 ```
 # os/.cargo/config
@@ -65,17 +111,11 @@ Hello, world!
 target = "riscv64gc-unknown-none-elf"
 ```
 
-它的含义是：
-
- CPU 架构是 `riscv64gc`，厂商是 `unknown`，操作系统是 `none`，`elf 表示没有标准的运行时库（表明没有任何系统调用的封装支持）`，但可以生成 ELF 格式的执行程序。
-
-此时如果重新编译代码，编译器就会更换CPU指令集使用riscv64gc
-
-## Part 2 移除标准库依赖
+这将使 cargo 工具在 os 目录下默认会使用 riscv64gc-unknown-none-elf 作为目标平台。 这种编译器运行的平台（x86_64）与可执行文件运行的目标平台不同的情况，称为 **交叉编译** (Cross Compile)。
 
 操作系统是很底层的应用软件，它不应该依赖Rust的标准库，因为标准库本身需要操作系统本身支持。
 
-### 2.1 移除println!()宏
+## 移除println!()宏
 
 `println!` 宏所在的 Rust 标准库 std 需要通过系统调用获得操作系统的服务，而如果要构建运行在裸机上的操作系统，就不能再依赖标准库了。所以我们第一步要尝试移除 `println!` 宏及其所在的标准库。
 
@@ -91,9 +131,14 @@ Rust编译器在编译程序时，从安全性考虑，需要有 `panic!` 宏的
 
 在标准库 std 中提供了关于 `panic!` 宏的具体实现，其大致功能是打印出错位置和原因并杀死当前应用。
 
-但是由于我们人工删掉了标准库依赖，导致这个宏失效了，因此我们需要手动实现一下这个宏：
+但是由于我们人工删掉了标准库依赖，导致这个宏失效了，因此我们需要手动实现一下这个宏。
+
+> `#[panic_handler]` 是一种编译指导属性，用于标记核心库core中的 `panic!` 宏要对接的函数（该函数实现对致命错误的具体处理）。该编译指导属性所标记的函数需要具有 `fn(&PanicInfo) -> !` 函数签名，函数可通过 `PanicInfo` 数据结构获取致命错误的相关信息。这样Rust编译器就可以把核心库core中的 `panic!` 宏与 `#[panic_handler]` 指向的panic函数实现合并在一起，使得no_std程序具有类似std库的应对致命错误的功能。
+
+我们创建一个新的子模块 `lang_items.rs` 实现panic函数，并通过 `#[panic_handler]` 属性通知编译器用panic函数来对接 `panic!` 宏。为了将该子模块添加到项目中，我们还需要在 `main.rs` 的 `#![no_std]` 的下方加上 `mod lang_items;` ，相关知识可参考 [Rust 模块编程](http://rcore-os.cn/rCore-Tutorial-Book-v3/chapter1/2remove-std.html#rust-modular-programming) ：
 
 ```rust
+// os/src/lang_items.rs
 use core::panic::PanicInfo;
 
 #[panic_handler]
@@ -102,34 +147,24 @@ fn panic(_info: &PanicInfo) -> ! {
 }
 ```
 
-`#[panic_handler]` 是一种编译指导属性，用于标记核心库core中的 `panic!` 宏要对接的函数（该函数实现对致命错误的具体处理）。该编译指导属性所标记的函数需要具有 `fn(&PanicInfo) -> !` 函数签名，函数可通过 `PanicInfo` 数据结构获取致命错误的相关信息。这样Rust编译器就可以把核心库core中的 `panic!` 宏与 `#[panic_handler]` 指向的panic函数实现合并在一起，使得no_std程序具有类似std库的应对致命错误的功能。
-
-再重新编译一下这个源代码：
+在把 `panic_handler` 配置在单独的文件 `os/src/lang_items.rs` 后，需要在os/src/main.rs文件中添加以下内容才能正常编译整个软件：
 
 ```rust
+// os/src/main.rs
 #![no_std]
-
-use core::panic::PanicInfo;
-
-#[panic_handler]
-fn panic(_info: &PanicInfo) -> ! {
-    loop {}
-}
-
-fn main() {
-    //println!("Hello, world!");
-}
+mod lang_items;
+// ... other code
 ```
-
-还是编译出错，好不好玩，意不意外？
 
 这次出错的原因是：
 
-```
+```shell
+$ cargo build
+   Compiling os v0.1.0 (/home/shinbokuow/workspace/v3/rCore-Tutorial-v3/os)
 error: requires `start` lang_item
 ```
 
-### 2.2 移除main函数
+## 移除main函数
 
 编译器提醒我们缺少一个名为 `start` 的语义项。
 
@@ -137,212 +172,33 @@ error: requires `start` lang_item
 
 事实上 `start` 语义项代表了标准库 std 在**执行应用程序之前**需要进行的一些**初始化工作**。由于我们禁用了标准库，编译器也就找不到这项功能的实现了。
 
-最简单粗暴的方法就是在 `main.rs` 的开头加入设置 `#![no_main]` 告诉编译器我们没有一般意义上的 `main` 函数，并将原来的 `main` 函数删除，压根不让编译器使用这项功能。在失去了 `main` 函数的情况下，编译器也就不需要完成所谓的初始化工作了。
+最简单的解决方案就是压根不让编译器使用这项功能。我们在 `main.rs` 的开头加入设置 `#![no_main]` 告诉编译器我们没有一般意义上的 `main` 函数，并将原来的 `main` 函数删除，压根不让编译器使用这项功能。在失去了 `main` 函数的情况下，编译器也就不需要完成所谓的初始化工作了。
 
-```rust
-#![no_std]
-#![no_main]
-use core::panic::PanicInfo;
+至此，我们成功移除了标准库的依赖，并完成了构建裸机平台上的操作系统的第一步工作–通过编译器检查并生成执行码。
 
-#[panic_handler]
-fn panic(_info: &PanicInfo) -> ! {
-    loop {}
-}
-
-```
-
-此时你再编译这个源代码，就不会报错了。
-
-```
-Finished dev [unoptimized + debuginfo] target(s) in 0.24s
-```
-
-
-
-## Part 3 构建用户态执行环境
-
-### 3.1 执行环境初始化
-
-我们之前把主函数给删除了，那只是权宜之计，我们最终还是需要能让程序跑起来的。因此现在我们需要给Rust编译器提供不依赖标准库的入口函数`_start`
-
-在之前的代码中追加如下代码段：
-
-```rust
-#[no_mangle]
-extern "C" fn _start() {
-    loop{};
-}
-```
-
-重新编译，使用反汇编工具导出汇编程序。可以看到如下输出：
-
-```bash
+```shell
 $ cargo build
    Compiling os v0.1.0 (/home/shinbokuow/workspace/v3/rCore-Tutorial-v3/os)
     Finished dev [unoptimized + debuginfo] target(s) in 0.06s
-
-[反汇编导出汇编程序]
-$ rust-objdump -S target/riscv64gc-unknown-none-elf/debug/os
-   target/riscv64gc-unknown-none-elf/debug/os:       file format elf64-littleriscv
-
-   Disassembly of section .text:
-
-   0000000000011120 <_start>:
-   ;     loop {}
-     11120: 09 a0            j       2 <_start+0x2>
-     11122: 01 a0            j       0 <_start+0x2>
 ```
 
-可以看到这就是一个死循环程序。但是现在可以执行了。
-
-### 3.2 提供执行退出机制
-
-将原来中的`main.rs`内容替换为：
+目前的主要代码包括 `main.rs` 和 `lang_items.rs` ，大致内容如下：
 
 ```rust
-#![no_std]
+// os/src/main.rs
 #![no_main]
-use core::panic::PanicInfo;
+#![no_std]
+mod lang_items;
+// ... other code
 
+
+// os/src/lang_items.rs
+use core::panic::PanicInfo;
 
 #[panic_handler]
 fn panic(_info: &PanicInfo) -> ! {
     loop {}
 }
-
-const SYSCALL_EXIT: usize = 93;
-
-fn syscall(id: usize, args: [usize; 3]) -> isize {
-    let mut ret;
-    unsafe {
-        core::arch::asm!(
-            "ecall",
-            inlateout("x10") args[0] => ret,
-            in("x11") args[1],
-            in("x12") args[2],
-            in("x17") id,
-        );
-    }
-    ret
-}
-
-pub fn sys_exit(xstate: i32) -> isize {
-    syscall(SYSCALL_EXIT, [xstate as usize, 0, 0])
-}
-
-#[no_mangle]
-extern "C" fn _start() {
-    sys_exit(9);
-}
 ```
 
-我们实现了一个系统调用叫`sys_exit`,整段程序一旦启动就会退出。
-
-我们编译执行一下修改后的程序：
-
-```bash
-$ cargo build --target riscv64gc-unknown-none-elf
-  Compiling os v0.1.0 (/media/chyyuu/ca8c7ba6-51b7-41fc-8430-e29e31e5328f/thecode/rust/os_kernel_lab/os)
-    Finished dev [unoptimized + debuginfo] target(s) in 0.26s
-
-[打印程序的返回值]
-$ qemu-riscv64 target/riscv64gc-unknown-none-elf/debug/os; echo $?
-9
-```
-
-可以看到，返回的结果确实是 `9` 。这样，我们勉强完成了一个简陋的用户态最小化执行环境。
-
-### 3.3 重新实现println!宏
-
-#### 0x01 封装`SYSCALL_WRITE`调用
-
-```rust
-const SYSCALL_WRITE: usize = 64;
-
-pub fn sys_write(fd: usize, buffer: &[u8]) -> isize {
-  syscall(SYSCALL_WRITE, [fd, buffer.as_ptr() as usize, buffer.len()])
-}
-
-```
-
-#### 0x02 实现 Write Trait 数据结构
-
-注意：*trait* 类似于其他语言中，常被称为 **接口**（*interfaces*）的功能，虽然有一些不同。
-
-实现基于 `Write` Trait 的数据结构，并完成 `Write` Trait 所需要的 `write_str` 函数，并用 `print` 函数进行包装。最后，基于 `print` 函数，实现Rust语言 **格式化宏** ( [formatting macros](https://doc.rust-lang.org/std/fmt/#related-macros) )。
-
-```rust
-#![no_std]
-#![no_main]
-use core::panic::PanicInfo;
-
-
-#[panic_handler]
-fn panic(_info: &PanicInfo) -> ! {
-    loop {}
-}
-
-const SYSCALL_EXIT: usize = 93;
-const SYSCALL_WRITE: usize = 64;
-
-
-fn syscall(id: usize, args: [usize; 3]) -> isize {
-    let mut ret;
-    unsafe {
-        core::arch::asm!(
-            "ecall",
-            inlateout("x10") args[0] => ret,
-            in("x11") args[1],
-            in("x12") args[2],
-            in("x17") id,
-        );
-    }
-    ret
-}
-
-pub fn sys_exit(xstate: i32) -> isize {
-    syscall(SYSCALL_EXIT, [xstate as usize, 0, 0])
-}
-
-
-#[no_mangle]
-extern "C" fn _start() {
-    println!("Hello, world!");
-    sys_exit(9);
-}
-
-pub fn sys_write(fd: usize, buffer: &[u8]) -> isize {
-  syscall(SYSCALL_WRITE, [fd, buffer.as_ptr() as usize, buffer.len()])
-}
-
-struct Stdout;
-
-impl Write for Stdout {
-    fn write_str(&mut self, s: &str) -> fmt::Result {
-        sys_write(1, s.as_bytes());
-        Ok(())
-    }
-}
-
-pub fn print(args: fmt::Arguments) {
-    Stdout.write_fmt(args).unwrap();
-
-}
-use core::fmt::{self, Write};
-#[macro_export]
-macro_rules! print {
-    ($fmt: literal $(, $($arg: tt)+)?) => {
-        $crate::console::print(format_args!($fmt $(, $($arg)+)?));
-    }
-}
-
-#[macro_export]
-macro_rules! println {
-    ($fmt: literal $(, $($arg: tt)+)?) => {
-        print(format_args!(concat!($fmt, "\n") $(, $($arg)+)?));
-    }
-}
-```
-
-编译执行，可以发现`Hello world !`被正常打印。
-
+本小节我们固然脱离了标准库，通过了编译器的检验，但也是伤筋动骨，将原有的很多功能弱化甚至直接删除，看起来距离在 RV64GC 平台上打印 `Hello world!` 相去甚远了（我们甚至连 `println!` 和 `main` 函数都删除了）。不要着急，从下一节开始，我们将着手实现本节移除的、由用户态执行环境提供的功能。
