@@ -40,7 +40,7 @@ cargo new hello-rust
 
 这会生成一个名为 `hello-rust` 的新目录，其中包含以下文件：
 
-```toml
+```
 hello-rust
 |- Cargo.toml
 |- src

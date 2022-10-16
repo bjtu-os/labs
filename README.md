@@ -26,13 +26,4 @@
 1. 熟悉操作系统相关知识。比如，一个程序运行中操作系统到底起了什么作用？程序运行中操作系统的内核态和用户态工作情况？OS的系统调用？进程？内存？IO？等。
 2. 对计算机体系结构有一定简单了解。比如，裸机是什么？裸机上能跑程序吗？什么是指令集？计算机体系结构？CPU、内存、IO等这些硬件之间如何协调完成计算任务的？
 3. 能够读懂简单的汇编语言、能够读懂简单的makefile文件。
-4. 熟悉Rust 基本语法，包括 Cargo 项目结构、Trait、函数式编程、Unsafe Rust、错误处理等。[Rust入门教程](docs/rust-tutorial.md)
-
-## 参考资料
-
-1. [函数 - Rust 程序设计语言 中文版 (rustwiki.org.cn)](https://www.rustwiki.org.cn/zh-CN/book/ch03-03-how-functions-work.html)
-2. [OS Tutorial Summer of Code 2020：Rust系统编程入门指导](https://github.com/rcore-os/rCore/wiki/os-tutorial-summer-of-code#step-0-自学rust编程大约7天)
-3. [Stanford 新开的一门很值得学习的 Rust 入门课程](https://reberhardt.com/cs110l/spring-2020/)
-4. [一份简单的 Rust 入门介绍](https://zhuanlan.zhihu.com/p/298648575)
-5. [《RustOS Guide》中的 Rust 介绍部分](https://simonkorl.gitbook.io/r-z-rustos-guide/dai-ma-zhi-qian/ex1)
-6. [一份简单的Rust宏编程新手指南](http://blog.hubwiz.com/2020/01/30/rust-macro/)
+4. 熟悉 Rust 基本语法，包括 Cargo 项目结构、Trait、函数式编程、Unsafe Rust、错误处理等。为了便于同学们入门Rust，我们准备了一份[Rust入门教程](docs/rust-tutorial.md)。
