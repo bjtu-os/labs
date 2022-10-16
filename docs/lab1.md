@@ -201,4 +201,43 @@ fn panic(_info: &PanicInfo) -> ! {
 }
 ```
 
+## 分析被移除标准库的程序
+
+对于上面这个被移除标准库的应用程序，通过了编译器的检查和编译，形成了二进制代码。但这个二进制代码是怎样的，它能否被正常执行呢？为了分析这些程序，首先需要安装 cargo-binutils 工具集：
+
+```shell
+$ cargo install cargo-binutils
+$ rustup component add llvm-tools-preview
+```
+
+这样我们可以通过各种工具来分析目前的程序：
+
+```shell
+# 文件格式
+$ file target/riscv64gc-unknown-none-elf/debug/os
+target/riscv64gc-unknown-none-elf/debug/os: ELF 64-bit LSB executable, UCB RISC-V, ......
+
+# 文件头信息
+$ rust-readobj -h target/riscv64gc-unknown-none-elf/debug/os
+   File: target/riscv64gc-unknown-none-elf/debug/os
+   Format: elf64-littleriscv
+   Arch: riscv64
+   AddressSize: 64bit
+   ......
+   Type: Executable (0x2)
+   Machine: EM_RISCV (0xF3)
+   Version: 1
+   Entry: 0x0
+   ......
+   }
+
+# 反汇编导出汇编程序
+$ rust-objdump -S target/riscv64gc-unknown-none-elf/debug/os
+   target/riscv64gc-unknown-none-elf/debug/os:       file format elf64-littleriscv
+```
+
+通过 `file` 工具对二进制程序 `os` 的分析可以看到它好像是一个合法的 RISC-V 64 可执行程序，但通过 `rust-readobj` 工具进一步分析，发现它的入口地址 Entry 是 `0` ，从 C/C++ 等语言中得来的经验告诉我们， `0` 一般表示 NULL 或空指针，因此等于 `0` 的入口地址看上去无法对应到任何指令。再通过 `rust-objdump` 工具把它反汇编，可以看到没有生成汇编代码。所以，我们可以断定，这个二进制程序虽然合法，但它是一个空程序。产生该现象的原因是：目前我们的程序（参考上面的源代码）没有进行任何有意义的工作，由于我们移除了 `main` 函数并将项目设置为 `#![no_main]` ，它甚至没有一个传统意义上的入口点（即程序首条被执行的指令所在的位置），因此 Rust 编译器会生成一个空程序。
+
+## 总结
+
 本小节我们固然脱离了标准库，通过了编译器的检验，但也是伤筋动骨，将原有的很多功能弱化甚至直接删除，看起来距离在 RV64GC 平台上打印 `Hello world!` 相去甚远了（我们甚至连 `println!` 和 `main` 函数都删除了）。不要着急，从下一节开始，我们将着手实现本节移除的、由用户态执行环境提供的功能。
