@@ -1,4 +1,4 @@
-# Lab 2 编写内核前置知识
+# Lab 2 编写操作系统内核前置知识
 
 ## 本节导读
 
@@ -17,7 +17,7 @@ Lab 2 我们将进行构建操作系统内核的第二步，即将我们的内�
 接下来我们来看如何启动 Qemu 。首先从 Github 下载课程代码：
 
 ```shell
-git clone git@github.com:bjtu-os/labs.git
+git clone https://github.com/bjtu-os/labs.git
 ```
 
 进入项目

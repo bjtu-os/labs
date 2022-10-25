@@ -81,7 +81,7 @@ rustup component add rust-src
 
 ## QEMU 模拟器安装
 
-[QEMU](https://zh.m.wikipedia.org/zh-hans/QEMU)，简单而言是一个硬件虚拟化的仿真程序，它本质上是一个托管的虚拟机，通过动态二进制转换，模拟CPU，并且提供一组设备模型，使它能够运行多种未修改的客户机操作系统。
+[QEMU](https://www.qemu.org/)，简单而言是一个硬件虚拟化的仿真程序，它本质上是一个托管的虚拟机，通过动态二进制转换，模拟CPU，并且提供一组设备模型，使它能够运行多种未修改的客户机操作系统。
 
 执行如下命令安装基本的软件包：
 
@@ -91,7 +91,7 @@ apt install autoconf automake autotools-dev curl libmpc-dev libmpfr-dev libgmp-d
               zlib1g-dev libexpat-dev pkg-config  libglib2.0-dev libpixman-1-dev git tmux python3 ninja-build wget
 ```
 
-然后通过源码安装qemu。
+然后通过源码安装 Qemu。
 
 第一步，下载:
 
