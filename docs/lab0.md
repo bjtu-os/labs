@@ -65,7 +65,7 @@ rustup default nightly
 
 我们最好把软件包管理器 cargo 所用的软件包镜像地址 crates.io 也换成清华大学的镜像服务器来加速三方库的下载。我们打开（如果没有就新建） `~/.cargo/config` 文件，并把内容修改为 [参见 crates.io 帮助](https://mirrors.tuna.tsinghua.edu.cn/help/crates.io-index.git/)：
 
-首先使用该命令编辑  `~/.cargo/config` 文件（如果有同学没学过 vim ，建议自学一下）：
+首先使用该命令编辑  `~/.cargo/config` 文件：
 
 ```shell
 vim ~/.cargo/config
@@ -81,7 +81,7 @@ replace-with = 'tuna'
 registry = "https://mirrors.tuna.tsinghua.edu.cn/git/crates.io-index.git"
 ```
 
-按`esc`键退出编辑模式，再按`:wq`加回车就可以保存并退出文件了，如果有同学之前没接触过vim，建议系统学习一下。
+按`esc`键退出编辑模式，再按`:wq`加**回车**就可以保存并退出文件了，如果有同学之前没接触过vim，建议系统学习一下。
 
 接下来安装一些Rust相关的软件包：
 
