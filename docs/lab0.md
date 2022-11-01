@@ -1,14 +1,19 @@
 # Lab 0 实验环境搭建
 
-所有实验均基于Linux操作系统进行开发，可以使用云服务器或本地虚拟机完成实验。
+**注意**： 本教程是基于 **openEuler 22.03** 镜像来配置，这是 **Ubuntu 20.04** 的[教程](./lab0-ubuntu.md)
 
-## C 开发环境配置
+## 下载 openEuler 镜像
 
-在实验或练习过程中，也会涉及部分基于C语言的开发，可以安装基本的本机开发环境和交叉开发环境。下面是以Ubuntu 20.04为例，需要安装的 C 开发环境涉及的软件：
+- x86 CPU版本地址：[openEuler-22.03-LTS-x86_64-dvd.iso](https://repo.openeuler.org/openEuler-22.03-LTS/ISO/x86_64/openEuler-22.03-LTS-x86_64-dvd.iso)
+- ARM CPU版本地址：[openEuler-22.03-LTS-aarch64-dvd.iso](https://repo.openeuler.org/openEuler-22.03-LTS/ISO/aarch64/openEuler-22.03-LTS-aarch64-dvd.iso)
+
+## 基础软件环境配置
+
+在实验或练习过程中，会用到一些基本的软件包：
 
 ```shell
-sudo apt-get update && sudo apt-get upgrade
-sudo apt-get install git build-essential gdb-multiarch qemu-system-misc gcc-riscv64-linux-gnu binutils-riscv64-linux-gnu
+$ sudo dnf groupinstall "Development Tools"
+$ sudo dnf install autoconf automake gcc gcc-c++ kernel-devel curl libmpc-devel mpfr-devel gmp-devel glib2 glib2-devel make cmake gawk bison flex texinfo gperf libtool patchutils bc python3 ninja-build wget xz curl gcc vim
 ```
 
 ## Rust 开发环境配置
@@ -81,17 +86,7 @@ rustup component add rust-src
 
 ## QEMU 模拟器安装
 
-[QEMU](https://www.qemu.org/)，简单而言是一个硬件虚拟化的仿真程序，它本质上是一个托管的虚拟机，通过动态二进制转换，模拟CPU，并且提供一组设备模型，使它能够运行多种未修改的客户机操作系统。
-
-执行如下命令安装基本的软件包：
-
-```bash
-apt install autoconf automake autotools-dev curl libmpc-dev libmpfr-dev libgmp-dev \
-              gawk build-essential bison flex texinfo gperf libtool patchutils bc \
-              zlib1g-dev libexpat-dev pkg-config  libglib2.0-dev libpixman-1-dev git tmux python3 ninja-build wget
-```
-
-然后通过源码安装 Qemu。
+[QEMU](https://www.qemu.org/)，简单而言是一个硬件虚拟化的仿真程序，它本质上是一个托管的虚拟机，通过动态二进制转换，模拟CPU，并且提供一组设备模型，使它能够运行多种未修改的客户机操作系统。通过源码安装 Qemu：
 
 第一步，下载:
 
