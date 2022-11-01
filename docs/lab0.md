@@ -7,6 +7,8 @@
 - x86 CPU版本地址：[openEuler-22.03-LTS-x86_64-dvd.iso](https://repo.openeuler.org/openEuler-22.03-LTS/ISO/x86_64/openEuler-22.03-LTS-x86_64-dvd.iso)
 - ARM CPU版本地址：[openEuler-22.03-LTS-aarch64-dvd.iso](https://repo.openeuler.org/openEuler-22.03-LTS/ISO/aarch64/openEuler-22.03-LTS-aarch64-dvd.iso)
 
+注意在安装过程中的图形用户界面，设置用户时，要选择**拥有管理员权限**
+
 ## 基础软件环境配置
 
 在实验或练习过程中，会用到一些基本的软件包：
@@ -134,3 +136,32 @@ openEuler 默认关闭了 `AllowTcpForwarding` 选项，如果需要使用 VS Co
 $ service sshd restart
 ```
 
+## 关于如何在 Linux 环境下复制粘贴
+
+首先在虚拟机下使用该命令查看本虚拟机的ip地址：
+
+```shell
+$ ip addr
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+    inet6 ::1/128 scope host
+       valid_lft forever preferred_lft forever
+2: enp0s5: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP group default qlen 1000
+    link/ether 00:1c:42:b1:0c:c2 brd ff:ff:ff:ff:ff:ff
+    inet 10.211.55.6/24 brd 10.211.55.255 scope global dynamic noprefixroute enp0s5
+       valid_lft 1002sec preferred_lft 1002sec
+    inet6 fdb2:2c26:f4e4:0:2fc4:c989:498e:5519/64 scope global dynamic noprefixroute
+       valid_lft 2591648sec preferred_lft 604448sec
+    inet6 fe80::3a0b:9181:b18:2072/64 scope link noprefixroute
+       valid_lft forever preferred_lft forever
+```
+
+注意这里能看出来本地虚拟机的ip地址是 `10.211.55.6`，然后打开自己电脑的终端界面，在**保持虚拟机运行的状态下**，输入该命令登录虚拟机：
+
+```shell
+ssh root@10.211.55.6
+```
+
+然后在自己的终端界面就可以自由使用复制粘贴功能了。
