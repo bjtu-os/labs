@@ -13,7 +13,9 @@
 
 ```shell
 $ sudo dnf groupinstall "Development Tools"
-$ sudo dnf install autoconf automake gcc gcc-c++ kernel-devel curl libmpc-devel mpfr-devel gmp-devel glib2 glib2-devel make cmake gawk bison flex texinfo gperf libtool patchutils bc python3 ninja-build wget xz curl gcc vim
+$ sudo dnf install autoconf automake gcc gcc-c++ kernel-devel curl libmpc-devel \
+mpfr-devel gmp-devel glib2 glib2-devel make cmake gawk bison flex texinfo gperf libtool \
+patchutils bc python3 ninja-build wget xz curl gcc vim
 ```
 
 ## Rust 开发环境配置
