@@ -126,3 +126,11 @@ qemu-system-riscv64 --version
 qemu-riscv64 --version
 ```
 
+## 使用 VS Code Remote SSH 连接注意事项
+
+openEuler 默认关闭了 `AllowTcpForwarding` 选项，如果需要使用 VS Code Remote SSH 的话，需要现在 openEuler 系统上的 `/etc/ssh/sshd_config` 最底下找到 `AllowTcpForwarding` 这一行删掉并保存，然后重启 `sshd` 服务：
+
+```shell
+$ service sshd restart
+```
+
