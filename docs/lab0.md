@@ -28,7 +28,7 @@ patchutils bc python3 ninja-build wget xz curl gcc vim
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 ```
 
-如果官方的脚本在运行时出现了网络速度较慢的问题，可选地可以通过修改 rustup 的镜像地址（修改为中科大的镜像服务器）来加速 [参见 rustup 帮助](https://mirrors.ustc.edu.cn/help/rust-static.html)：
+如果官方的脚本在运行时出现了网络速度较慢的问题，可以通过修改 rustup 的镜像地址（修改为中科大的镜像服务器）来加速 [参见 rustup 帮助](https://mirrors.ustc.edu.cn/help/rust-static.html)：
 
 永久更新`.bash_profile`文件，改变环境变量：
 
