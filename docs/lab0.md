@@ -28,7 +28,28 @@ patchutils bc python3 ninja-build wget xz curl gcc vim
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 ```
 
-如果速度太慢，建议开 VPN 下载。
+如果官方的脚本在运行时出现了网络速度较慢的问题，可选地可以通过修改 rustup 的镜像地址（修改为中科大的镜像服务器）来加速 [参见 rustup 帮助](https://mirrors.ustc.edu.cn/help/rust-static.html)：
+
+永久更新`.bash_profile`文件，改变环境变量：
+
+```shell
+$ echo 'export RUSTUP_UPDATE_ROOT=https://mirrors.ustc.edu.cn/rust-static' >> ~/.bash_profile
+$ echo 'export RUSTUP_DIST_SERVER=https://mirrors.ustc.edu.cn/rust-static/rustup' >> ~/.bash_profile
+```
+
+使更改的文件生效：
+
+```shell
+source ~/.bash_profile
+```
+
+用官方的安装脚本来安装 Rust 版本管理器 rustup 和 Rust 包管理器 cargo：
+
+```shell
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+```
+
+使用镜像在安装过程中有可能会出现404错误，这种情况就只能转用官方源，然后开 VPN 下载。
 
 安装完成后，我们可以重新打开一个终端来让之前设置的环境变量生效。我们也可以手动将环境变量设置应用到当前终端，只需要输入以下命令：
 
