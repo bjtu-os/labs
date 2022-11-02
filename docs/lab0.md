@@ -22,21 +22,13 @@ patchutils bc python3 ninja-build wget xz curl gcc vim
 
 ## Rust 开发环境配置
 
-首先安装 Rust 版本管理器 rustup 和 Rust 包管理器 cargo，这里我们用官方的安装脚本来安装：
+首先安装 Rust 版本管理器 rustup 和 Rust 包管理器 Cargo，这里我们用官方的安装脚本来安装：
 
 ```shell
-curl https://sh.rustup.rs -sSf | sh
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 ```
 
-如果通过官方的脚本下载失败了，可以在浏览器的地址栏中输入 [https://sh.rustup.rs](https://sh.rustup.rs/) 来下载脚本，在本地运行即可。
-
-如果官方的脚本在运行时出现了网络速度较慢的问题，可选地可以通过修改 rustup 的镜像地址（修改为清华大学的镜像服务器）来加速 [参见 rustup 帮助](https://mirrors.tuna.tsinghua.edu.cn/help/rustup/)：
-
-```shell
-export RUSTUP_DIST_SERVER=https://mirrors.tuna.edu.cn/rustup
-export RUSTUP_UPDATE_ROOT=https://mirrors.tuna.edu.cn/rustup/rustup
-curl https://sh.rustup.rs -sSf | sh
-```
+如果速度太慢，建议开 VPN 下载。
 
 安装完成后，我们可以重新打开一个终端来让之前设置的环境变量生效。我们也可以手动将环境变量设置应用到当前终端，只需要输入以下命令：
 
