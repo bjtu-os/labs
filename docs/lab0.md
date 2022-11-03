@@ -115,7 +115,7 @@ make -j$(nproc)
 之后我们可以在同目录下 `sudo make install` 将 QEMU 安装到 `/usr/local/bin` 目录下，但这样经常会引起冲突。个人来说更习惯的做法是，编辑 `~/.bashrc` 文件（如果使用的是默认的 `bash` 终端），在文件的末尾加入几行：
 
 ```shell
-# 请注意，qemu-7.0.0 的父目录可以随着你的实际安装位置灵活调整
+# 请注意，qemu-7.0.0 的父目录需要随着你的实际安装位置灵活调整
 export PATH=$PATH:/path/to/qemu-7.0.0/build
 ```
 
