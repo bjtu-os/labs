@@ -135,7 +135,7 @@ Rust编译器在编译程序时，从安全性考虑，需要有 `panic!` 宏的
 
 > `#[panic_handler]` 是一种编译指导属性，用于标记核心库core中的 `panic!` 宏要对接的函数（该函数实现对致命错误的具体处理）。该编译指导属性所标记的函数需要具有 `fn(&PanicInfo) -> !` 函数签名，函数可通过 `PanicInfo` 数据结构获取致命错误的相关信息。这样Rust编译器就可以把核心库core中的 `panic!` 宏与 `#[panic_handler]` 指向的panic函数实现合并在一起，使得no_std程序具有类似std库的应对致命错误的功能。
 
-我们创建一个新的子模块 `lang_items.rs` 实现panic函数，并通过 `#[panic_handler]` 属性通知编译器用panic函数来对接 `panic!` 宏。为了将该子模块添加到项目中，我们还需要在 `main.rs` 的 `#![no_std]` 的下方加上 `mod lang_items;` ，相关知识可参考 [Rust 模块编程](#Rust 模块编程) ：
+我们创建一个新的子模块 `lang_items.rs` 实现panic函数，并通过 `#[panic_handler]` 属性通知编译器用panic函数来对接 `panic!` 宏。为了将该子模块添加到项目中，我们还需要在 `main.rs` 的 `#![no_std]` 的下方加上 `mod lang_items;` ，相关知识可参考 [Rust 模块编程](#Rust-模块编程) ：
 
 ```rust
 // os/src/lang_items.rs
