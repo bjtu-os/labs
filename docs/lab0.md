@@ -22,28 +22,11 @@ patchutils bc python3 ninja-build wget xz curl gcc vim
 
 ## Rust 开发环境配置
 
-我们可以通过修改 rustup 的镜像地址（修改为中科大的镜像服务器）来加速安装过程 [参见 rustup 帮助](https://mirrors.ustc.edu.cn/help/rust-static.html)：
-
-首先永久更新`.bash_profile`文件，改变环境变量：
-
-```shell
-$ echo 'export RUSTUP_UPDATE_ROOT=https://mirrors.ustc.edu.cn/rust-static' >> ~/.bash_profile
-$ echo 'export RUSTUP_DIST_SERVER=https://mirrors.ustc.edu.cn/rust-static/rustup' >> ~/.bash_profile
-```
-
-使更改的文件生效：
-
-```shell
-source ~/.bash_profile
-```
-
-然后用官方的安装脚本来安装 Rust 版本管理器 rustup 和 Rust 包管理器 cargo：
+因为如果使用国内镜像安装的话会出现各种各样的问题，所以我们用官方的安装脚本来安装 Rust 版本管理器 `rustup` 和 Rust 包管理器 `cargo`，如果速度慢就开 VPN：
 
 ```shell
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 ```
-
-使用镜像在安装过程中有可能会出现404错误，这种情况就只能转用官方源，然后开 VPN 下载。具体的方法就是在`.bash_profile`文件中去掉刚才设置的两个环境变量，然后重新登录一次终端，就可以使用官方的源。
 
 安装完成后，我们手动将环境变量设置应用到当前终端，只需要输入以下命令：
 
