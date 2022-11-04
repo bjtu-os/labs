@@ -114,7 +114,15 @@ target = "riscv64gc-unknown-none-elf"
 
 `println!` 宏所在的 Rust 标准库 std 需要通过系统调用获得操作系统的服务，而如果要构建运行在裸机上的操作系统，就不能再依赖标准库了。所以我们第一步要尝试移除 `println!` 宏及其所在的标准库。
 
-我们在 `main.rs` 的开头加上一行 `#![no_std]` 来告诉 Rust 编译器不使用 Rust 标准库 std ，转而使用核心库 core（core库不需要操作系统的支持）。**同时记得注释掉之前使用的println!()宏**，重新编译执行，你会得到一个报错的程序，出错信息大概长这样：
+我们在 `main.rs` 的开头加上一行 `#![no_std]` 来告诉 Rust 编译器不使用 Rust 标准库 std ，转而使用核心库 core（core库不需要操作系统的支持）。同时记得注释掉之前使用的`println!`宏：
+
+```rust
+fn main() {
+//    println!("Hello, world!");
+}
+```
+
+重新编译执行，你会得到一个报错的程序，出错信息大概长这样：
 
 ```
 `#[panic_handler]` function required, but not found
