@@ -14,7 +14,7 @@ $ cargo new os --bin
 
 我们加上了 `--bin` 选项来告诉 Cargo 我们创建一个可执行程序项目而不是函数库项目。此时，项目的文件结构如下：
 
-```bash
+```
 os
 ├── Cargo.toml
 └── src
@@ -92,17 +92,15 @@ error[E0463]: can't find crate for `std`
 
 为了以裸机平台为目标编译程序，我们要将对标准库 std 的引用换成核心库 core。
 
-## 移除标准库依赖
-
 由于后续实验需要 `rustc` 编译器缺省生成RISC-V 64的目标代码，所以我们首先要给 `rustc` 添加一个target : `riscv64gc-unknown-none-elf` 。这可通过如下命令来完成：
 
-```
+```shell
 $ rustup target add riscv64gc-unknown-none-elf
 ```
 
 然后在 `os` 目录下新建 `.cargo` 目录，并在这个目录下创建 `config` 文件，输入如下内容：
 
-```
+```toml
 # os/.cargo/config
 [build]
 target = "riscv64gc-unknown-none-elf"
@@ -112,7 +110,7 @@ target = "riscv64gc-unknown-none-elf"
 
 操作系统是很底层的应用软件，它不应该依赖Rust的标准库，因为标准库本身需要操作系统本身支持。
 
-## 移除println!()宏
+## 移除标准库依赖
 
 `println!` 宏所在的 Rust 标准库 std 需要通过系统调用获得操作系统的服务，而如果要构建运行在裸机上的操作系统，就不能再依赖标准库了。所以我们第一步要尝试移除 `println!` 宏及其所在的标准库。
 
