@@ -244,6 +244,13 @@ $ rust-objdump -S target/riscv64gc-unknown-none-elf/debug/os
 
 ## Appendix
 
+### 参考资料
+
+1. Rust 语言圣经 (格式化输出): https://course.rs/basic/formatted-output.html
+2. 关于 Rust 宏的介绍: https://kaisery.github.io/trpl-zh-cn/ch19-06-macros.html
+3. `file` 命令: https://www.runoob.com/linux/linux-comm-file.html
+4. ELF文件格式: https://xinqiu.gitbooks.io/linux-inside-zh/content/Theory/linux-theory-2.html
+
 ### Rust 模块编程
 
 将一个软件工程项目划分为多个子模块分别进行实现是一种被广泛应用的编程技巧，它有助于促进复用代码，并显著提升代码的可读性和可维护性。因此，众多编程语言均对模块化编程提供了支持，Rust 语言也不例外。
