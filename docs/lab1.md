@@ -15,13 +15,10 @@ $ cargo new os --bin
 我们加上了 `--bin` 选项来告诉 Cargo 我们创建一个可执行程序项目而不是函数库项目。此时，项目的文件结构如下：
 
 ```bash
-$ tree os
 os
 ├── Cargo.toml
 └── src
     └── main.rs
-
-1 directory, 2 files
 ```
 
 其中 `Cargo.toml` 中保存着项目的配置，包括作者的信息、联系方式以及库依赖等等。显而易见源代码保存在 `src` 目录下，目前为止只有 `main.rs` 一个文件，让我们看一下里面的内容：
