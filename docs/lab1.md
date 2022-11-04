@@ -125,7 +125,7 @@ fn main() {
 重新编译执行，你会得到一个报错的程序，出错信息大概长这样：
 
 ```
-`#[panic_handler]` function required, but not found
+error: `#[panic_handler]` function required, but not found
 ```
 
 在使用 Rust 编写应用程序的时候，我们常常在遇到了一些无法恢复的致命错误（panic），导致程序无法继续向下运行。这时手动或自动调用 `panic!` 宏来打印出错的位置，让我们能够意识到它的存在，并进行一些后续处理。
@@ -163,8 +163,10 @@ mod lang_items;
 
 ```shell
 $ cargo build
-   Compiling os v0.1.0 (/home/shinbokuow/workspace/v3/rCore-Tutorial-v3/os)
+   Compiling os v0.1.0 (/home/lichunyu/os)
 error: requires `start` lang_item
+
+error: could not compile `os` due to previous error
 ```
 
 ## 移除main函数
@@ -181,8 +183,8 @@ error: requires `start` lang_item
 
 ```shell
 $ cargo build
-   Compiling os v0.1.0 (/home/shinbokuow/workspace/v3/rCore-Tutorial-v3/os)
-    Finished dev [unoptimized + debuginfo] target(s) in 0.06s
+   Compiling os v0.1.0 (/home/lichunyu/os)
+    Finished dev [unoptimized + debuginfo] target(s) in 0.05s
 ```
 
 目前的主要代码包括 `main.rs` 和 `lang_items.rs` ，大致内容如下：
