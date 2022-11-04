@@ -2,11 +2,11 @@
 
 ## 本节导读
 
-本节我们将进行构建操作系统内核的最后一个步骤，即基于 RustSBI 提供的服务完成在屏幕上打印 `Hello world!` 和关机操作。事实上，作为对我们之前提到的 应用程序执行环境 的细化，RustSBI 介于底层硬件和内核之间，是我们内核的底层执行环境。本节将会提到执行环境除了为上层应用进行初始化的第二种职责：即在上层应用运行时提供服务。本节的代码涉及的汇编和 Rust 的细节较多，不必完全理解其含义，重点在于将内核成功运行起来。
+本节我们将进行构建操作系统内核的最后一个步骤，即基于 RustSBI 提供的服务完成在屏幕上打印 `Hello world!` 和关机操作。事实上，作为对我们之前提到的 *应用程序执行环境* 的细化，RustSBI 介于底层硬件和内核之间，是我们内核的底层执行环境。本节将会提到执行环境除了为上层应用进行初始化的第二种职责：即在上层应用运行时提供服务。本节的代码涉及的汇编和 Rust 的细节较多，不必完全理解其含义，重点在于将内核成功运行起来。
 
 ## 使用 RustSBI 提供的服务
 
-之前我们对 RustSBI 的了解仅限于它会在计算机启动时进行它所负责的环境初始化工作，并将计算机控制权移交给内核。但实际上作为内核的执行环境，它还有另一项职责：即在内核运行时响应内核的请求为内核提供服务。当内核发出请求时，计算机会转由 RustSBI 控制来响应内核的请求，待请求处理完毕后，计算机控制权会被交还给内核。从内存布局的角度来思考，每一层执行环境（或称软件栈）都对应到内存中的一段代码和数据，这里的控制权转移指的是 CPU 从执行一层软件的代码到执行另一层软件的代码的过程。这个过程和函数调用比较像，但是内核无法通过函数调用来请求 RustSBI 提供的服务，这是因为内核并没有和 RustSBI 链接到一起，我们仅仅使用 RustSBI 构建后的可执行文件，因此内核对于 RustSBI 的符号一无所知。事实上，内核需要通过另一种复杂的方式来“调用” RustSBI 的服务：
+之前我们对 RustSBI 的了解仅限于它会在计算机启动时进行它所负责的环境初始化工作，并将计算机控制权移交给内核。但实际上作为内核的执行环境，它还有另一项职责：即在内核运行时响应内核的请求为内核提供服务。当内核发出请求时，计算机会转由 RustSBI 控制来响应内核的请求，待请求处理完毕后，计算机控制权会被交还给内核。从内存布局的角度来思考，每一层执行环境（或称软件栈）都对应到内存中的一段代码和数据，这里的控制权转移指的是 CPU 从执行一层软件的代码到执行另一层软件的代码的过程。这个过程和函数调用比较像，但是内核无法通过函数调用来请求 RustSBI 提供的服务，这是因为内核并没有和 RustSBI 链接到一起，我们仅仅使用 RustSBI 构建后的可执行文件，因此内核对于 RustSBI 的符号一无所知。事实上，内核需要通过另一种复杂的方式来 “调用” RustSBI 的服务：
 
 ```rust
 // os/src/main.rs
@@ -69,7 +69,7 @@ pub fn shutdown() -> ! {
 
 ## 实现格式化输出
 
-`console_putchar` 的功能过于受限，如果想打印一行 `Hello world!` 的话需要进行多次调用。能否像本章第一节那样使用 `println!` 宏一行就完成输出呢？因此我们尝试自己编写基于 `console_putchar` 的 `println!` 宏。
+`console_putchar` 的功能过于受限，如果想打印一行 `Hello world!` 的话需要进行多次调用。能否像本 Lab 第一节那样使用 `println!` 宏一行就完成输出呢？因此我们尝试自己编写基于 `console_putchar` 的 `println!` 宏。
 
 ```rust
 // os/src/main.rs
@@ -170,7 +170,7 @@ pub fn rust_main() -> ! {
 }
 ```
 
-在`os`主目录下，使用该命令去除内核可执行文件中的元数据，就如同之前章节 **编写操作系统内核** 我们做的一样：
+在 `os` 主目录下，使用该命令去除内核可执行文件中的元数据，就如同之前章节 **编写操作系统内核** 我们做的一样：
 
 ```shell
 $ rust-objcopy --strip-all target/riscv64gc-unknown-none-elf/release/os -O binary target/riscv64gc-unknown-none-elf/release/os.bin
@@ -182,10 +182,10 @@ $ rust-objcopy --strip-all target/riscv64gc-unknown-none-elf/release/os -O binar
 $ cargo build --release
 ```
 
-使用 Qemu 运行我们的内核，注意`path/to/rustsbi-qemu.bin`改成你自己存储`rustsbi-qemu.bin`的路径
+使用 Qemu 运行我们的内核，注意 `path/to/rustsbi-qemu.bin` 改成你自己存储 `rustsbi-qemu.bin` 的路径：
 
 ```shell
-qemu-system-riscv64 \
+$ qemu-system-riscv64 \
     -machine virt \
     -nographic \
     -bios path/to/rustsbi-qemu.bin \
@@ -200,4 +200,4 @@ Hello, world!
 Panicked at src/main.rs:18 Shutdown machine!
 ```
 
-可以看到，panic 所在的源文件和代码行数被正确报告，这将为我们后续章节的开发和调试带来很大方便。
+可以看到，panic 所在的源文件和代码行数被正确报告，这将为我们后续章节的开发和调试带来很大方便。至此，Lab 2 就已经完成了。
