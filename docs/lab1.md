@@ -33,8 +33,8 @@ fn main() {
 
 ```bash
 $ cargo run
-   Compiling os v0.1.0 (/home/shinbokuow/workspace/v3/rCore-Tutorial-v3/os)
-    Finished dev [unoptimized + debuginfo] target(s) in 1.15s
+   Compiling os v0.1.0 (/home/lichunyu/os)
+    Finished dev [unoptimized + debuginfo] target(s) in 0.25s
      Running `target/debug/os`
 Hello, world!
 ```
