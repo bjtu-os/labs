@@ -73,6 +73,8 @@ pub fn shutdown() -> ! {
 
 ```rust
 // os/src/main.rs
+
+// 注意以下这两行要放在 mod lang_iterms; 和 mod sbi; 上面
 #[macro_use]
 mod console;
 
