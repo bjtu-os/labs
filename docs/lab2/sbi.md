@@ -136,7 +136,7 @@ fn panic(_info: &PanicInfo) -> ! {
 // os/src/main.rs
 #![feature(panic_info_message)]
 
-// os/src/lang_item.rs
+// os/src/lang_items.rs
 use crate::sbi::shutdown;
 use core::panic::PanicInfo;
 
