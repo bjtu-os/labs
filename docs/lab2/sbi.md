@@ -172,19 +172,19 @@ pub fn rust_main() -> ! {
 }
 ```
 
-在 `os` 主目录下，使用该命令去除内核可执行文件中的元数据，就如同之前章节 **编写操作系统内核** 我们做的一样：
-
-```shell
-$ rust-objcopy --strip-all target/riscv64gc-unknown-none-elf/release/os -O binary target/riscv64gc-unknown-none-elf/release/os.bin
-```
-
-再编译构建我们现在的代码：
+在 `os` 主目录下，编译构建我们现在的代码：
 
 ```shell
 $ cargo build --release
 ```
 
-使用 Qemu 运行我们的内核，注意 `path/to/rustsbi-qemu.bin` 改成你自己存储 `rustsbi-qemu.bin` 的路径：
+然后使用该命令去除内核可执行文件中的元数据，就如同之前章节 **编写操作系统内核** 我们做的一样：
+
+```shell
+$ rust-objcopy --strip-all target/riscv64gc-unknown-none-elf/release/os -O binary target/riscv64gc-unknown-none-elf/release/os.bin
+```
+
+再使用 Qemu 运行我们的内核，注意 `path/to/rustsbi-qemu.bin` 改成你自己存储 `rustsbi-qemu.bin` 的路径：
 
 ```shell
 $ qemu-system-riscv64 \
