@@ -23,7 +23,7 @@ git clone https://github.com/bjtu-os/labs.git
 进入项目
 
 ```shell
-cd labs
+cd labs/code/lab2
 ```
 
 我们使用如下命令来启动 Qemu 并运行我们的内核：
@@ -32,8 +32,8 @@ cd labs
 qemu-system-riscv64 \
     -machine virt \
     -nographic \
-    -bios env/bootloader/rustsbi-qemu.bin \
-    -device loader,file=env/os.bin,addr=0x80200000
+    -bios bootloader/rustsbi-qemu.bin \
+    -device loader,file=os.bin,addr=0x80200000
 ```
 
 其中：
