@@ -1,13 +1,13 @@
 [package]
 name = "user_lib"
 version = "0.1.0"
-authors = ["Yifan Wu <shinbokuow@163.com>"]
+authors = ["Chunyu Li <cyli0212@gmail.com>"]
 edition = "2018"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-riscv = { git = "https://github.com/rcore-os/riscv", features = ["inline-asm"] } 
+riscv = { git = "https://github.com/bjtu-os/riscv", features = ["inline-asm"] } 
 
 [profile.release]
 debug = true
