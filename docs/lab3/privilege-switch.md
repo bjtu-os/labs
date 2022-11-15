@@ -320,7 +320,7 @@ riscv = { git = "https://github.com/bjtu-os/riscv", features = ["inline-asm"] }
 
 - 第 21 行开始，当遇到目前还不支持的 Trap 类型的时候，我们的批处理操作系统整个 panic 报错退出。
 
-### 实现系统调用功能[#](http://rcore-os.cn/rCore-Tutorial-Book-v3/chapter2/4trap-handling.html#id10)
+### 实现系统调用功能
 
 对于系统调用而言， `syscall` 函数并不会实际处理系统调用，而只是根据 syscall ID 分发到具体的处理函数：
 
