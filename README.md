@@ -27,3 +27,7 @@
 2. 对计算机体系结构有一定简单了解。比如，裸机是什么？裸机上能跑程序吗？什么是指令集？计算机体系结构？CPU、内存、IO 等这些硬件之间如何协调完成计算任务的？
 3. 能够读懂简单的汇编语言、能够读懂简单的 Makefile 文件。
 4. 熟悉 Rust 基本语法，包括 Cargo 项目结构、Trait、函数式编程、Unsafe Rust、错误处理等。为了便于同学们入门 Rust，我们准备了一份 [Rust 入门教程](docs/rust-tutorial.md)。
+
+## 参考
+
+本教程内容参考了清华大学操作系统实验课 [rCore](http://rcore-os.cn/rCore-Tutorial-Book-v3/index.html) 。
