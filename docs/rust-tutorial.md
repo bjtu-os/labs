@@ -1,22 +1,20 @@
 # Rust 入门教程
 
-## 快速配置 Rust 开发环境并编写一个小应用！
-
 ## 安装 Rust
 
-### Rustup：Rust安装器和版本管理工具
+### `rustup`：Rust 安装器和版本管理工具
 
-安装 Rust 的主要方式是通过 Rustup 这一工具，它既是一个 Rust 安装器又是一个版本管理工具。
+安装 Rust 的主要方式是通过 `rustup` 这一工具，它既是一个 Rust 安装器又是一个版本管理工具。
 
-该教程是基于 macOS、Linux 或其它类 Unix 系统。要下载 Rustup 并安装 Rust，请在终端中运行以下命令，然后遵循屏幕上的指示。如果你使用的是 Windows 系统，请参见 [“其他安装方式”](https://forge.rust-lang.org/infra/other-installation-methods.html)。
+该教程是基于 macOS、Linux 或其它类 Unix 系统。要下载 `rustup` 并安装 Rust，请在终端中运行以下命令，然后遵循屏幕上的指示。如果你使用的是 Windows 系统，请参见 [“其他安装方式”](https://forge.rust-lang.org/infra/other-installation-methods.html)。
 
 ```shell
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 ```
 
-### Cargo：Rust 的构建工具和包管理器
+### `cargo`：Rust 的构建工具和包管理器
 
-你在安装 Rustup 时，也会安装 Rust 构建工具和包管理器的最新稳定版，即 Cargo。Cargo 可以做很多事情：
+你在安装 `rustup` 时，也会安装 Rust 构建工具和包管理器的最新稳定版，即 `cargo`。`cargo` 可以做很多事情：
 
 - `cargo build` 可以构建项目
 - `cargo run` 可以运行项目
@@ -24,7 +22,7 @@ curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 - `cargo doc` 可以为项目构建文档
 - `cargo publish` 可以将库发布到 [crates.io](https://crates.io/)。
 
-要检查你是否安装了 Rust 和 Cargo，可以在终端中运行：
+要检查你是否安装了 Rust 和 `cargo`，可以在终端中运行：
 
 ```shell
 cargo --version
@@ -32,7 +30,7 @@ cargo --version
 
 ## 创建新项目
 
-我们将在新的 Rust 开发环境中编写一个小应用。首先用 Cargo 创建一个新项目。在你的终端中执行：
+我们将在新的 Rust 开发环境中编写一个小应用。首先用 `cargo` 创建一个新项目。在你的终端中执行：
 
 ```shell
 cargo new hello-rust
@@ -53,7 +51,7 @@ hello-rust
 
 ------
 
-`cargo new` 会生成一个新的“Hello, world!”项目！我们可以进入新创建的目录中，执行下面的命令来运行此程序：
+`cargo new` 会生成一个新的 “Hello, world!” 项目！我们可以进入新创建的目录中，执行下面的命令来运行此程序：
 
 ```shell
 cargo run
@@ -61,7 +59,7 @@ cargo run
 
 您应该会在终端中看到如下内容：
 
-```
+```shell
 $ cargo run
    Compiling hello-rust v0.1.0 (/Users/ag_dubs/rust/hello-rust)
     Finished dev [unoptimized + debuginfo] target(s) in 1.34s
@@ -69,9 +67,9 @@ $ cargo run
 Hello, world!
 ```
 
-## 更改Cargo镜像
+## 更改 `cargo` 镜像
 
-因为Cargo默认的下载源在国外，速度比较慢，所以我们可以设置[清华TUNA](https://mirrors.tuna.tsinghua.edu.cn/help/crates.io-index.git/)的镜像来加快下载速度。编辑Cargo的配置文件：
+因为 `cargo` 默认的下载源在国外，速度比较慢，所以我们可以设置 [清华TUNA](https://mirrors.tuna.tsinghua.edu.cn/help/crates.io-index.git/) 的镜像来加快下载速度。编辑 `cargo` 的配置文件：
 
 ```shell
 vim ~/.cargo/config
@@ -106,7 +104,7 @@ ferris-says = "0.2"
 cargo build
 ```
 
-…之后 Cargo 就会安装该依赖。
+…之后 `cargo` 就会安装该依赖。
 
 运行此命令会创建一个新文件 `Cargo.lock`，该文件记录了本地所用依赖库的精确版本。
 
@@ -160,8 +158,8 @@ cargo run
 
 ## Learn more!
 
-现在你已经了解了Rust基本的构建、运行、包管理功能，接下来你可以在[官网](https://www.rust-lang.org/zh-CN/learn)学习更多Rust知识！
+现在你已经了解了 Rust 基本的构建、运行、包管理功能，接下来你可以在 [官网](https://www.rust-lang.org/zh-CN/learn) 学习更多 Rust 知识！
 
 ### 参考
 
-1. https://www.rust-lang.org/learn/get-started
+1. Rust 官网入门教程：https://www.rust-lang.org/learn/get-started
