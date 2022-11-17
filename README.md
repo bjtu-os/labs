@@ -13,11 +13,11 @@
 - Lab 6 - 实现内存的动态申请和释放管理。
 - Lab 7 - 实现进程及进程的管理。
 
-共计8个实验项目，通过实验的方式深入研讨操作系统底层的工作原理，并使用 Rust 语言逐步实现一个基本的操作系统内核。
+共计 8 个实验项目，通过实验的方式深入研讨操作系统底层的工作原理，并使用 Rust 语言逐步实现一个基本的操作系统内核。
 
 ## 实验环境要求
 
-1. OS 环境配置：对于 Windows 10/11 和 macOS 上的用户，可以使用 WSL2、VMware Workstation、Parallels Desktop 等相关软件， 通过虚拟机方式安装 **openEuler 22.03 LTS**，并在上面进行实验。注意 **VirtualBox** 虚拟机会在后续实验操作中出现问题，不建议使用。
+1. OS 环境配置：对于 Windows 10/11 和 macOS 上的用户，可以使用 WSL 2、VMware Workstation、Parallels Desktop 等相关软件， 通过虚拟机方式安装 **openEuler 22.03 LTS**，并在上面进行实验。注意 **VirtualBox** 虚拟机会在后续实验操作中出现问题，不建议使用。
 2. Rust 环境配置：需要在虚拟机上配置好 Rust 开发环境。
 3. Qemu 模拟器安装：我们需要使用 Qemu 7.0.0 以上版本进行实验，为此，从源码手动编译安装 Qemu 模拟器。
 
