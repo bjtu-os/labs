@@ -278,7 +278,7 @@ fn main() -> i32 {
 
 ```shell
 $ cd user
-$ make build
+$ make build -j $(nproc)
 $ cd target/riscv64gc-unknown-none-elf/release/
 
 # 确认待执行的应用为 ELF 格式

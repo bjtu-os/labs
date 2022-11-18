@@ -26,7 +26,7 @@
 $ cd os
 
 # 构建并运行代码 (Makefile 中已包含了 user 目录下 make build 命令)
-$ make run
+$ make run -j $(nproc)
 
 ...
 [kernel] Hello, world!

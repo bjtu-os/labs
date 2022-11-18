@@ -24,7 +24,8 @@ global_asm!(include_str!("link_app.S"));
 我们在 `os` 目录下，构建并运行整个系统：
 
 ```shell
-$ make run
+$ make run -j $(nproc)
+
 ...
 [kernel] Application exited with code 0
 [kernel] Loading app_3
