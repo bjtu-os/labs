@@ -1,0 +1,19 @@
+[package]
+name = "os"
+version = "0.1.0"
+authors = ["Chunyu Li <cyli0212@gmail.com>"]
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+riscv = { git = "https://github.com/bjtu-os/riscv", features = ["inline-asm"] }
+lazy_static = { version = "1.4.0", features = ["spin_no_std"] }
+cfg-if = { version = "1.0.0" }
+
+[features]
+board_qemu = []
+board_k210 = []
+
+[profile.release]
+debug = true
