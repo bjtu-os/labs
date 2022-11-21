@@ -53,15 +53,15 @@ rustup install nightly
 rustup default nightly
 ```
 
-我们最好把软件包管理器 cargo 所用的软件包镜像地址 crates.io 也换成清华大学的镜像服务器来加速三方库的下载。我们打开（如果没有就新建） `~/.cargo/config` 文件，并把内容修改为 [参见 crates.io 帮助](https://mirrors.tuna.tsinghua.edu.cn/help/crates.io-index.git/)：
+我们最好把软件包管理器 `cargo` 所用的软件包镜像地址 crates.io 也换成清华大学的镜像服务器来加速三方库的下载。 [参见 crates.io 帮助](https://mirrors.tuna.tsinghua.edu.cn/help/crates.io-index.git/)：
 
-首先使用该命令编辑  `~/.cargo/config` 文件：
+首先使用该命令编辑 `~/.cargo/config` 文件：
 
 ```shell
 vim ~/.cargo/config
 ```
 
-按`i`键进入编辑模式，复制以下内容：
+按 `i` 键进入编辑模式，复制粘贴以下内容：
 
 ```toml
 [source.crates-io]
@@ -71,9 +71,9 @@ replace-with = 'tuna'
 registry = "https://mirrors.tuna.tsinghua.edu.cn/git/crates.io-index.git"
 ```
 
-按`esc`键退出编辑模式，再按`:wq`加**回车**就可以保存并退出文件了，如果有同学之前没接触过vim，建议系统学习一下。
+按 `esc` 键退出编辑模式，再按 `:wq` 加 **回车** 就可以保存并退出文件了，如果有同学之前没接触过 vim，建议系统性学习一下。
 
-接下来安装一些Rust相关的软件包：
+接下来安装一些 Rust 相关的软件包：
 
 ```shell
 rustup target add riscv64gc-unknown-none-elf
@@ -84,32 +84,25 @@ rustup component add rust-src
 
 至于 Rust 开发环境，推荐 JetBrains CLion + Rust 插件 或者 Visual Studio Code 搭配 rust-analyzer 和 RISC-V Support 插件。
 
-> - JetBrains CLion 是付费商业软件，但对于学生和教师，只要在 JetBrains 网站申请 Educational License，可以享受一定期限（一年左右）的免费使用的福利。
+> - JetBrains CLion 是付费商业软件，但对于学生和教师，只要在 JetBrains 官网申请 Educational License，可以享受一定期限（一年左右）的免费使用的福利。
 > - Visual Studio Code 是开源软件，不用付费就可使用。
 > - 当然，采用 VIM，Emacs 等传统的编辑器也是没有问题的。
 
 ## QEMU 模拟器安装
 
-[QEMU](https://www.qemu.org/)，简单而言是一个硬件虚拟化的仿真程序，它本质上是一个托管的虚拟机，通过动态二进制转换，模拟CPU，并且提供一组设备模型，使它能够运行多种未修改的客户机操作系统。通过源码安装 Qemu：
-
-第一步，下载:
-
-```bash
-wget https://download.qemu.org/qemu-7.0.0.tar.xz
-```
-
-第二步，解压：
+[QEMU](https://en.wikipedia.org/wiki/QEMU) 是一个托管的虚拟机，它通过动态的二进制转换，模拟 CPU，并且提供一组设备模型，使它能够运行多种未修改的客户机 OS，可以通过与 [KVM](https://en.wikipedia.org/wiki/Kernel-based_Virtual_Machine) 一起使用进而接近本地速度运行虚拟机（接近真实电脑的速度）。我们现在通过源码安装 QEMU：
 
 ```shell
+# 下载源码压缩包
+wget https://download.qemu.org/qemu-7.0.0.tar.xz
+
+# 解压
 tar xvJf qemu-7.0.0.tar.xz
-```
 
-第三步，编译安装并配置 RISC-V 支持：
-
-```bash
+# 编译安装并配置 RISC-V 支持：
 cd qemu-7.0.0
 ./configure --target-list=riscv64-softmmu,riscv64-linux-user  # 如果要支持图形界面，可添加 " --enable-sdl" 参数
-make -j$(nproc)
+make -j $(nproc)
 ```
 
 之后我们可以在同目录下 `sudo make install` 将 QEMU 安装到 `/usr/local/bin` 目录下，但这样经常会引起冲突。个人来说更习惯的做法是，编辑 `~/.bashrc` 文件（如果使用的是默认的 `bash` 终端），在文件的末尾加入几行：
