@@ -1,4 +1,4 @@
-# 多道程序和协作式调度
+# Lab 4 多道程序和协作式调度
 
 1. [引言](lab4/intro.md)
 2. [多道程序放置与加载](lab4/multiprogram-place-load.md)

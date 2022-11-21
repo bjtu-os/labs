@@ -1,4 +1,4 @@
-# 批处理系统
+# Lab 3 批处理系统
 
 1. [引言](lab3/intro.md)
 2. [特权级机制](lab3/privilege-mechanism.md)
