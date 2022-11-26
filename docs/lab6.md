@@ -176,7 +176,7 @@ pub fn handle_alloc_error(layout: core::alloc::Layout) -> ! {
  }
  ```
 
-然后我们在 `rust_main` 中我们调用了 `mm::init()` 函数：
+然后我们在 `rust_main` 中调用了 `mm::init()` 函数：
 
 ```rust
 // os/src/main.rs
@@ -225,7 +225,7 @@ pub fn heap_test() {
 
 ## 代码示例
 
-首先 `clone` 或者更新 [代码仓库](https://github.com/bjtu-os/labs) 。本 Lab 的代码都放在 `code/lab6` 下面：
+首先 `clone` 或者更新代码仓库。本 Lab 的代码都放在 `code/lab6` 下面：
 
 ```shell
 $ cd os
