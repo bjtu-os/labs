@@ -124,31 +124,31 @@ struct TaskManagerInner {
 我们可重用并扩展之前初始化 `TaskManager` 的全局实例 `TASK_MANAGER` ：
 
 ```rust
-// os/src/task/mod.rs
-
-lazy_static! {
-    pub static ref TASK_MANAGER: TaskManager = {
-        let num_app = get_num_app();
-        let mut tasks = [
-            TaskControlBlock {
-                task_cx: TaskContext::zero_init(),
-                task_status: TaskStatus::UnInit
-            };
-            MAX_APP_NUM
-        ];
-        for i in 0..num_app {
-            tasks[i].task_cx = TaskContext::goto_restore(init_app_cx(i));
-            tasks[i].task_status = TaskStatus::Ready;
-        }
-        TaskManager {
-            num_app,
-            inner: unsafe { UPSafeCell::new(TaskManagerInner {
-                tasks,
-                current_task: 0,
-            })},
-        }
-    };
-}
+ 1 // os/src/task/mod.rs
+ 2
+ 3 lazy_static! {
+ 4     pub static ref TASK_MANAGER: TaskManager = {
+ 5         let num_app = get_num_app();
+ 6         let mut tasks = [
+ 7             TaskControlBlock {
+ 8                 task_cx: TaskContext::zero_init(),
+ 9                 task_status: TaskStatus::UnInit
+10             };
+11             MAX_APP_NUM
+12         ];
+13         for i in 0..num_app {
+14             tasks[i].task_cx = TaskContext::goto_restore(init_app_cx(i));
+15             tasks[i].task_status = TaskStatus::Ready;
+16         }
+17         TaskManager {
+18             num_app,
+19             inner: unsafe { UPSafeCell::new(TaskManagerInner {
+20                 tasks,
+21                 current_task: 0,
+22             })},
+23         }
+24     };
+25 }
 ```
 
 - 第 5 行：调用 `loader` 子模块提供的 `get_num_app` 接口获取链接到内核的应用总数，后面会用到；
@@ -240,35 +240,35 @@ impl TaskManager {
 接下来看看 `run_next_task` 的实现：
 
 ```rust
-// os/src/task/mod.rs
-
-fn run_next_task() {
-    TASK_MANAGER.run_next_task();
-}
-
-impl TaskManager {
-    fn run_next_task(&self) {
-        if let Some(next) = self.find_next_task() {
-            let mut inner = self.inner.exclusive_access();
-            let current = inner.current_task;
-            inner.tasks[next].task_status = TaskStatus::Running;
-            inner.current_task = next;
-            let current_task_cx_ptr = &mut inner.tasks[current].task_cx as *mut TaskContext;
-            let next_task_cx_ptr = &inner.tasks[next].task_cx as *const TaskContext;
-            drop(inner);
-            // before this, we should drop local variables that must be dropped manually
-            unsafe {
-                __switch(
-                    current_task_cx_ptr,
-                    next_task_cx_ptr,
-                );
-            }
-            // go back to user mode
-        } else {
-            panic!("All applications completed!");
-        }
-    }
-}
+ 1 // os/src/task/mod.rs
+ 2
+ 3 fn run_next_task() {
+ 4     TASK_MANAGER.run_next_task();
+ 5 }
+ 6
+ 7 impl TaskManager {
+ 8     fn run_next_task(&self) {
+ 9         if let Some(next) = self.find_next_task() {
+10             let mut inner = self.inner.exclusive_access();
+11             let current = inner.current_task;
+12             inner.tasks[next].task_status = TaskStatus::Running;
+13             inner.current_task = next;
+14             let current_task_cx_ptr = &mut inner.tasks[current].task_cx as *mut TaskContext;
+15             let next_task_cx_ptr = &inner.tasks[next].task_cx as *const TaskContext;
+16             drop(inner);
+17             // before this, we should drop local variables that must be dropped manually
+18             unsafe {
+19                 __switch(
+20                     current_task_cx_ptr,
+21                     next_task_cx_ptr,
+22                 );
+23             }
+24             // go back to user mode
+25         } else {
+26             panic!("All applications completed!");
+27         }
+28     }
+29 }
 ```
 
 `run_next_task` 使用任务管理器的全局实例 `TASK_MANAGER` 的 `run_next_task` 方法。它会调用 `find_next_task` 方法尝试寻找一个运行状态为 `Ready` 的应用并返回其 ID 。注意到其返回的类型是 `Option<usize>` ，也就是说不一定能够找到，当所有的应用都退出并将自身状态修改为 `Exited` 就会出现这种情况，此时 `find_next_task` 应该返回 `None` 。如果能够找到下一个可运行的应用的话，我们就可以分别拿到当前应用 `current_task_cx_ptr` 和即将被切换到的应用 `next_task_cx_ptr` 的任务上下文指针，然后调用 `__switch` 接口进行切换。如果找不到的话，说明所有的应用都运行完毕了，我们可以直接 panic 退出内核。

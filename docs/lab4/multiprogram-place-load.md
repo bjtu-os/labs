@@ -17,33 +17,33 @@
 由于每个应用被加载到的位置都不同，也就导致它们的链接脚本 `linker.ld` 中的 `BASE_ADDRESS` 都是不同的。实际上，我们不是直接用 `cargo build` 构建应用的链接脚本，而是写了一个脚本定制工具 `build.py` ，为每个应用定制了各自的链接脚本：
 
 ```python
- # user/build.py
-
- import os
-
- base_address = 0x80400000
- step = 0x20000
- linker = 'src/linker.ld'
-
- app_id = 0
- apps = os.listdir('src/bin')
- apps.sort()
- for app in apps:
-     app = app[:app.find('.')]
-     lines = []
-     lines_before = []
-     with open(linker, 'r') as f:
-         for line in f.readlines():
-             lines_before.append(line)
-             line = line.replace(hex(base_address), hex(base_address+step*app_id))
-             lines.append(line)
-     with open(linker, 'w+') as f:
-         f.writelines(lines)
-     os.system('cargo build --bin %s --release' % app)
-     print('[build.py] application %s start with address %s' %(app, hex(base_address+step*app_id)))
-     with open(linker, 'w+') as f:
-         f.writelines(lines_before)
-     app_id = app_id + 1
+ 1 # user/build.py
+ 2
+ 3 import os
+ 4
+ 5 base_address = 0x80400000
+ 6 step = 0x20000
+ 7 linker = 'src/linker.ld'
+ 8
+ 9 app_id = 0
+10 apps = os.listdir('src/bin')
+11 apps.sort()
+12 for app in apps:
+13     app = app[:app.find('.')]
+14     lines = []
+15     lines_before = []
+16     with open(linker, 'r') as f:
+17         for line in f.readlines():
+18             lines_before.append(line)
+19             line = line.replace(hex(base_address), hex(base_address+step*app_id))
+20             lines.append(line)
+21     with open(linker, 'w+') as f:
+22         f.writelines(lines)
+23     os.system('cargo build --bin %s --release' % app)
+24     print('[build.py] application %s start with address %s' %(app, hex(base_address+step*app_id)))
+25     with open(linker, 'w+') as f:
+26         f.writelines(lines_before)
+27     app_id = app_id + 1
 ```
 
 它的思路很简单，在遍历 `app` 的大循环里面只做了这样几件事情：

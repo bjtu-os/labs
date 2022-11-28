@@ -53,45 +53,45 @@ Trap 控制流在调用 `__switch` 之前就需要明确知道即将切换到哪
 下面我们给出 `__switch` 的实现：
 
 ```assembly
-# os/src/task/switch.S
-
-.altmacro
-.macro SAVE_SN n
-    sd s\n, (\n+2)*8(a0)
-.endm
-.macro LOAD_SN n
-    ld s\n, (\n+2)*8(a1)
-.endm
-    .section .text
-    .globl __switch
-__switch:
-    # 阶段 [1]
-    # __switch(
-    #     current_task_cx_ptr: *mut TaskContext,
-    #     next_task_cx_ptr: *const TaskContext
-    # )
-    # 阶段 [2]
-    # save kernel stack of current task
-    sd sp, 8(a0)
-    # save ra & s0~s11 of current execution
-    sd ra, 0(a0)
-    .set n, 0
-    .rept 12
-        SAVE_SN %n
-        .set n, n + 1
-    .endr
-    # 阶段 [3]
-    # restore ra & s0~s11 of next execution
-    ld ra, 0(a1)
-    .set n, 0
-    .rept 12
-        LOAD_SN %n
-        .set n, n + 1
-    .endr
-    # restore kernel stack of next task
-    ld sp, 8(a1)
-    # 阶段 [4]
-    ret
+ 1 # os/src/task/switch.S
+ 2
+ 3 .altmacro
+ 4 .macro SAVE_SN n
+ 5     sd s\n, (\n+2)*8(a0)
+ 6 .endm
+ 7 .macro LOAD_SN n
+ 8     ld s\n, (\n+2)*8(a1)
+ 9 .endm
+10     .section .text
+11     .globl __switch
+12 __switch:
+13     # 阶段 [1]
+14     # __switch(
+15     #     current_task_cx_ptr: *mut TaskContext,
+16     #     next_task_cx_ptr: *const TaskContext
+17     # )
+18     # 阶段 [2]
+19     # save kernel stack of current task
+20     sd sp, 8(a0)
+21     # save ra & s0~s11 of current execution
+22     sd ra, 0(a0)
+23     .set n, 0
+24     .rept 12
+25         SAVE_SN %n
+26         .set n, n + 1
+27     .endr
+28     # 阶段 [3]
+29     # restore ra & s0~s11 of next execution
+30     ld ra, 0(a1)
+31     .set n, 0
+32     .rept 12
+33         LOAD_SN %n
+34         .set n, n + 1
+35     .endr
+36     # restore kernel stack of next task
+37     ld sp, 8(a1)
+38     # 阶段 [4]
+39     ret
 ```
 
 我们手写汇编代码来实现 `__switch` 。在阶段 [1] 可以看到它的函数原型中的两个参数分别是当前 A 任务上下文指针 `current_task_cx_ptr` 和即将被切换到的 B 任务上下文指针 `next_task_cx_ptr` ，从 [RISC-V 调用规范](../lab2/func-call.md#调用规范) 可以知道它们分别通过寄存器 `a0/a1` 传入。阶段 [2] 体现在第 19~27 行，即根据 B 任务上下文保存的内容来恢复 `ra` 寄存器、`s0~s11` 寄存器以及 `sp` 寄存器。从中我们也能够看出 `TaskContext` 里面究竟包含哪些寄存器：
