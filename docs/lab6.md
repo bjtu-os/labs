@@ -9,7 +9,6 @@
 - 初始时能提供一块大内存空间作为初始的 “堆”。在没有分页机制情况下，这块空间是物理内存空间，否则就是虚拟内存空间。
 - 提供在堆上分配和释放内存的函数接口。这样函数调用方通过分配内存函数接口得到地址连续的空闲内存块进行读写，也能通过释放内存函数接口回收内存，以备后续的内存分配请求。
 - 提供空闲空间管理的连续内存分配算法。相关算法能动态地维护一系列空闲和已分配的内存块，从而有效地管理空闲块。
-- （可选）提供建立在堆上的数据结构和操作。有了上述基本的内存分配与释放函数接口，就可以实现类似动态数组，动态字典等空间灵活可变的堆数据结构，提高编程的灵活性。
 
 ## 静态与动态内存分配
 
@@ -128,23 +127,23 @@ extern crate alloc;
 然后，根据 `alloc` 留好的接口提供全局动态内存分配器：
 
 ```rust
-// os/src/mm/heap_allocator.rs
-
-use buddy_system_allocator::LockedHeap;
-use crate::config::KERNEL_HEAP_SIZE;
-
-#[global_allocator]
-static HEAP_ALLOCATOR: LockedHeap = LockedHeap::empty();
-
-static mut HEAP_SPACE: [u8; KERNEL_HEAP_SIZE] = [0; KERNEL_HEAP_SIZE];
-
-pub fn init_heap() {
-    unsafe {
-        HEAP_ALLOCATOR
-            .lock()
-            .init(HEAP_SPACE.as_ptr() as usize, KERNEL_HEAP_SIZE);
-    }
-}
+ 1 // os/src/mm/heap_allocator.rs
+ 2
+ 3 use buddy_system_allocator::LockedHeap;
+ 4 use crate::config::KERNEL_HEAP_SIZE;
+ 5
+ 6 #[global_allocator]
+ 7 static HEAP_ALLOCATOR: LockedHeap = LockedHeap::empty();
+ 8
+ 9 static mut HEAP_SPACE: [u8; KERNEL_HEAP_SIZE] = [0; KERNEL_HEAP_SIZE];
+10
+11 pub fn init_heap() {
+12     unsafe {
+13         HEAP_ALLOCATOR
+14             .lock()
+15             .init(HEAP_SPACE.as_ptr() as usize, KERNEL_HEAP_SIZE);
+16     }
+17 }
 ```
 
 - 第 7 行，我们直接将 `buddy_system_allocator` 中提供的 `LockedHeap` 实例化成一个全局变量，并使用 `alloc` 要求的 `#[global_allocator]` 语义项进行标记。注意 `LockedHeap` 已经实现了 `GlobalAlloc` 要求的抽象接口了。
@@ -176,7 +175,7 @@ pub fn handle_alloc_error(layout: core::alloc::Layout) -> ! {
  }
  ```
 
-然后我们在 `rust_main` 中调用了 `mm::init()` 函数：
+然后我们在 `rust_main()` 中调用了 `mm::init()` 函数：
 
 ```rust
 // os/src/main.rs
@@ -239,4 +238,4 @@ heap_test passed!
 [kernel] Panicked at src/main.rs:70 Shutdown machine!
 ```
 
-可以看到，heap_test 已经通过，说明我们的动态分配内存的功能已经实现。
+可以看到，`heap_test()` 已经通过，说明我们的动态分配内存的功能已经实现。
