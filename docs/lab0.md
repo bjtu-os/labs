@@ -2,12 +2,14 @@
 
 **注意**： 本教程是基于 **openEuler 22.03** 操作系统来配置。如果使用 **Ubuntu** 操作系统的话，注意包管理器需要使用`apt`，安装相应包的指令也会发生变化。
 
-## 下载 openEuler 镜像
+## 下载 openEuler 操作系统镜像
 
-- x86 CPU版本地址：[openEuler-22.03-LTS-x86_64-dvd.iso](https://repo.openeuler.org/openEuler-22.03-LTS/ISO/x86_64/openEuler-22.03-LTS-x86_64-dvd.iso)
-- ARM CPU版本地址：[openEuler-22.03-LTS-aarch64-dvd.iso](https://repo.openeuler.org/openEuler-22.03-LTS/ISO/aarch64/openEuler-22.03-LTS-aarch64-dvd.iso)
+**openEuler 22.03 LTS** 操作系统镜像的官网地址：https://repo.openeuler.org/openEuler-22.03-LTS/ISO/
 
-注意在安装过程中的图形用户界面，设置用户时，要选择**拥有管理员权限**
+- x86 CPU版本地址：https://repo.openeuler.org/openEuler-22.03-LTS/ISO/x86_64/openEuler-22.03-LTS-x86_64-dvd.iso
+- ARM CPU版本地址：https://repo.openeuler.org/openEuler-22.03-LTS/ISO/aarch64/openEuler-22.03-LTS-aarch64-dvd.iso
+
+注意在安装过程中的图形用户界面，设置用户时，要选择 **拥有管理员权限**
 
 ## 基础软件环境配置
 

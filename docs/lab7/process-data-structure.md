@@ -20,48 +20,48 @@
 在 Rust 编译 & 链接辅助程序 `os/build.rs` 中，会读取位于 `user/src/bin` 中应用程序对应的执行文件，并生成 `link_app.S` ，按顺序保存链接进来的每个应用的名字：
 
 ```rust
-// os/build.rs
-
-for i in 0..apps.len() {
-    writeln!(f, r#"    .quad app_{}_start"#, i)?;
-}
-writeln!(f, r#"    .quad app_{}_end"#, apps.len() - 1)?;
-
-writeln!(f, r#"
-.global _app_names
-_app_names:"#)?;
-for app in apps.iter() {
-    writeln!(f, r#"    .string "{}""#, app)?;
-}
-
-for (idx, app) in apps.iter().enumerate() {
-    ...
-}
+ 1 // os/build.rs
+ 2
+ 3 for i in 0..apps.len() {
+ 4     writeln!(f, r#"    .quad app_{}_start"#, i)?;
+ 5 }
+ 6 writeln!(f, r#"    .quad app_{}_end"#, apps.len() - 1)?;
+ 7
+ 8 writeln!(f, r#"
+ 9 .global _app_names
+10 _app_names:"#)?;
+11 for app in apps.iter() {
+12     writeln!(f, r#"    .string "{}""#, app)?;
+13 }
+14
+15 for (idx, app) in apps.iter().enumerate() {
+16     ...
+17 }
 ```
 
 第 8~13 行，我们按照顺序将各个应用的名字通过 `.string` 伪指令放到数据段中，注意链接器会自动在每个字符串的结尾加入分隔符 `\0` ，它们的位置则由全局符号 `_app_names` 指出。这样在编译操作系统的过程中，会生成如下的 `link_app.S` 文件：
 
-```assembly
-    .section .data
-    .global _num_app
-_num_app:
-    .quad 15
-    .quad app_0_start
-    .quad app_1_start
-......
-    .global _app_names
-_app_names:
-    .string "exit"
-    .string "fantastic_text"
-......
-    .section .data
-    .global app_0_start
-    .global app_0_end
-    .align 3
-app_0_start:
-    .incbin "../user/target/riscv64gc-unknown-none-elf/release/exit"
-app_0_end:
-......
+```rust
+ 1     .section .data
+ 2     .global _num_app
+ 3 _num_app:
+ 4     .quad 15
+ 5     .quad app_0_start
+ 6     .quad app_1_start
+ 7 ......
+ 8     .global _app_names
+ 9 _app_names:
+10     .string "exit"
+11     .string "fantastic_text"
+12 ......
+13     .section .data
+14     .global app_0_start
+15     .global app_0_end
+16     .align 3
+17 app_0_start:
+18     .incbin "../user/target/riscv64gc-unknown-none-elf/release/exit"
+19 app_0_end:
+20 ......
 ```
 
 在这个文件中，可以看到应用代码和表示应用的元数据信息都放在数据段。第10行是第一个应用的名字 `exit` ，第13~14行是第一个应用 `exit` 在OS镜像文件中的开始和结束位置；第18行是第一个应用 `exit` 的ELF格式执行文件的内容，

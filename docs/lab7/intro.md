@@ -30,3 +30,58 @@
 >
 > - 相同点：站在一般用户和应用程序的角度看，任务和进程都表示运行的程序。站在操作系统的角度看，任务和进程都表示为一个程序的执行过程。二者都能够被操作系统打断并通过切换来分时占用 CPU 资源；都需要 **地址空间** 来放置代码和数据；都有从开始到结束运行这样的生命周期。
 > - 不同点：第三/四章提到的 **任务** 是这里提到的 **进程** 的初级阶段，任务还没进化到拥有更强大的动态变化功能：进程可以在运行的过程中，创建 **子进程** 、 用新的 **程序** 内容覆盖已有的 **程序** 内容。这种动态变化的功能可让程序在运行过程中动态使用更多的物理或虚拟的 **资源** 。
+
+## 代码示例
+
+首先 `clone` 或者更新代码仓库。本 Lab 的代码都放在 `code/lab7` 下面：
+
+```shell
+$ cd os
+
+# 构建并运行代码
+$ make run -j $(nproc)
+```
+
+待内核初始化完毕之后，将在屏幕上打印可用的应用列表并进入 Shell 程序：
+
+```
+...
+/**** APPs ****
+exit
+fantastic_text
+forkexec
+forktest
+forktest2
+forktest_simple
+forktree
+hello_world
+initproc
+matrix
+sleep
+sleep_simple
+stack_overflow
+user_shell
+usertests
+usertests-simple
+yield
+**************/
+Rust user shell
+```
+
+其中 `usertests` 打包了很多应用，只要执行它就能够自动执行一系列应用。
+
+只需输入应用的名称并回车即可在系统中执行该应用。以应用 `exit` 为例：
+
+```
+>> exit
+I am the parent. Forking the child...
+I am parent, fork a child pid 3
+I am the parent, waiting now..
+I am the child.
+waitpid 3 ok.
+exit pass.
+Shell: Process 2 exited with code 0
+>>
+```
+
+当应用执行完毕后，将继续回到 Shell 程序的命令输入模式。

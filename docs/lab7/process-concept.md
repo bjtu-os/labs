@@ -149,42 +149,42 @@ pub fn waitpid(pid: usize, exit_code: &mut i32) -> isize {
 我们首先来看用户初始程序 `initproc` 是如何实现的：
 
 ```rust
-// user/src/bin/initproc.rs
-
-#![no_std]
-#![no_main]
-
-#[macro_use]
-extern crate user_lib;
-
-use user_lib::{
-    fork,
-    wait,
-    exec,
-    yield_,
-};
-
-#[no_mangle]
-fn main() -> i32 {
-    if fork() == 0 {
-        exec("user_shell\0");
-    } else {
-        loop {
-            let mut exit_code: i32 = 0;
-            let pid = wait(&mut exit_code);
-            if pid == -1 {
-                yield_();
-                continue;
-            }
-            println!(
-                "[initproc] Released a zombie process, pid={}, exit_code={}",
-                pid,
-                exit_code,
-            );
-        }
-    }
-    0
-}
+ 1 // user/src/bin/initproc.rs
+ 2
+ 3 #![no_std]
+ 4 #![no_main]
+ 5
+ 6 #[macro_use]
+ 7 extern crate user_lib;
+ 8
+ 9 use user_lib::{
+10     fork,
+11     wait,
+12     exec,
+13     yield_,
+14 };
+15
+16 #[no_mangle]
+17 fn main() -> i32 {
+18     if fork() == 0 {
+19         exec("user_shell\0");
+20     } else {
+21         loop {
+22             let mut exit_code: i32 = 0;
+23             let pid = wait(&mut exit_code);
+24             if pid == -1 {
+25                 yield_();
+26                 continue;
+27             }
+28             println!(
+29                 "[initproc] Released a zombie process, pid={}, exit_code={}",
+30                 pid,
+31                 exit_code,
+32             );
+33         }
+34     }
+35     0
+36 }
 ```
 
 - 第 19 行为 `fork` 返回值为 0 的分支，表示子进程，此行直接通过 `exec` 执行 shell 程序 `user_shell` ，注意我们需要在字符串末尾手动加入 `\0` ，因为 Rust 在将这些字符串连接到只读数据段的时候不会插入 `\0` 。
@@ -235,73 +235,73 @@ pub fn getchar() -> u8 {
 接下来就可以介绍 shell 程序 `user_shell` 是如何实现的了：
 
 ```rust
-// user/src/bin/user_shell.rs
-
-#![no_std]
-#![no_main]
-
-extern crate alloc;
-
-#[macro_use]
-extern crate user_lib;
-
-const LF: u8 = 0x0au8;
-const CR: u8 = 0x0du8;
-const DL: u8 = 0x7fu8;
-const BS: u8 = 0x08u8;
-
-use alloc::string::String;
-use user_lib::{fork, exec, waitpid, yield_};
-use user_lib::console::getchar;
-
-#[no_mangle]
-pub fn main() -> i32 {
-    println!("Rust user shell");
-    let mut line: String = String::new();
-    print!(">> ");
-    loop {
-        let c = getchar();
-        match c {
-            LF | CR => {
-                println!("");
-                if !line.is_empty() {
-                    line.push('\0');
-                    let pid = fork();
-                    if pid == 0 {
-                        // child process
-                        if exec(line.as_str()) == -1 {
-                            println!("Error when executing!");
-                            return -4;
-                        }
-                        unreachable!();
-                    } else {
-                        let mut exit_code: i32 = 0;
-                        let exit_pid = waitpid(pid as usize, &mut exit_code);
-                        assert_eq!(pid, exit_pid);
-                        println!(
-                            "Shell: Process {} exited with code {}",
-                            pid, exit_code
-                        );
-                    }
-                    line.clear();
-                }
-                print!(">> ");
-            }
-            BS | DL => {
-                if !line.is_empty() {
-                    print!("{}", BS as char);
-                    print!(" ");
-                    print!("{}", BS as char);
-                    line.pop();
-                }
-            }
-            _ => {
-                print!("{}", c as char);
-                line.push(c as char);
-            }
-        }
-    }
-}
+ 1 // user/src/bin/user_shell.rs
+ 2
+ 3 #![no_std]
+ 4 #![no_main]
+ 5
+ 6 extern crate alloc;
+ 7
+ 8 #[macro_use]
+ 9 extern crate user_lib;
+10
+11 const LF: u8 = 0x0au8;
+12 const CR: u8 = 0x0du8;
+13 const DL: u8 = 0x7fu8;
+14 const BS: u8 = 0x08u8;
+15
+16 use alloc::string::String;
+17 use user_lib::{fork, exec, waitpid, yield_};
+18 use user_lib::console::getchar;
+19
+20 #[no_mangle]
+21 pub fn main() -> i32 {
+22     println!("Rust user shell");
+23     let mut line: String = String::new();
+24     print!(">> ");
+25     loop {
+26         let c = getchar();
+27         match c {
+28             LF | CR => {
+29                 println!("");
+30                 if !line.is_empty() {
+31                     line.push('\0');
+32                     let pid = fork();
+33                     if pid == 0 {
+34                         // child process
+35                         if exec(line.as_str()) == -1 {
+36                             println!("Error when executing!");
+37                             return -4;
+38                         }
+39                         unreachable!();
+40                     } else {
+41                         let mut exit_code: i32 = 0;
+42                         let exit_pid = waitpid(pid as usize, &mut exit_code);
+43                         assert_eq!(pid, exit_pid);
+44                         println!(
+45                             "Shell: Process {} exited with code {}",
+46                             pid, exit_code
+47                         );
+48                     }
+49                     line.clear();
+50                 }
+51                 print!(">> ");
+52             }
+53             BS | DL => {
+54                 if !line.is_empty() {
+55                     print!("{}", BS as char);
+56                     print!(" ");
+57                     print!("{}", BS as char);
+58                     line.pop();
+59                 }
+60             }
+61             _ => {
+62                 print!("{}", c as char);
+63                 line.push(c as char);
+64             }
+65         }
+66     }
+67 }
 ```
 
 可以看到，在以第 25 行开头的主循环中，每次都是调用 `getchar` 获取一个用户输入的字符，并根据它相应进行一些动作。第 23 行声明的字符串 `line` 则维护着用户当前输入的命令内容，它也在不断发生变化。
