@@ -42,54 +42,54 @@ All applications completed
 当我们使用 `make run` 让系统运行的过程中，这个汇编代码 `link_app.S` 就生成了。我们可以先来看一看 `link_app.S` 里面的内容：
 
 ```assembly
-# os/src/link_app.S
-
-    .align 3
-    .section .data
-    .global _num_app
-_num_app:
-    .quad 5
-    .quad app_0_start
-    .quad app_1_start
-    .quad app_2_start
-    .quad app_3_start
-    .quad app_4_start
-    .quad app_4_end
-
-    .section .data
-    .global app_0_start
-    .global app_0_end
-app_0_start:
-    .incbin "../user/target/riscv64gc-unknown-none-elf/release/00hello_world.bin"
-app_0_end:
-
-    .section .data
-    .global app_1_start
-    .global app_1_end
-app_1_start:
-    .incbin "../user/target/riscv64gc-unknown-none-elf/release/01store_fault.bin"
-app_1_end:
-
-    .section .data
-    .global app_2_start
-    .global app_2_end
-app_2_start:
-    .incbin "../user/target/riscv64gc-unknown-none-elf/release/02power.bin"
-app_2_end:
-
-    .section .data
-    .global app_3_start
-    .global app_3_end
-app_3_start:
-    .incbin "../user/target/riscv64gc-unknown-none-elf/release/03priv_inst.bin"
-app_3_end:
-
-    .section .data
-    .global app_4_start
-    .global app_4_end
-app_4_start:
-    .incbin "../user/target/riscv64gc-unknown-none-elf/release/04priv_csr.bin"
-app_4_end:
+ 1 # os/src/link_app.S
+ 2
+ 3     .align 3
+ 4     .section .data
+ 5     .global _num_app
+ 6 _num_app:
+ 7     .quad 5
+ 8     .quad app_0_start
+ 9     .quad app_1_start
+10     .quad app_2_start
+11     .quad app_3_start
+12     .quad app_4_start
+13     .quad app_4_end
+14
+15     .section .data
+16     .global app_0_start
+17     .global app_0_end
+18app_0_start:
+19     .incbin "../user/target/riscv64gc-unknown-none-elf/release/00hello_world.bin"
+20app_0_end:
+21
+22     .section .data
+23     .global app_1_start
+24     .global app_1_end
+25app_1_start:
+26     .incbin "../user/target/riscv64gc-unknown-none-elf/release/01store_fault.bin"
+27app_1_end:
+28
+29     .section .data
+30     .global app_2_start
+31     .global app_2_end
+32app_2_start:
+33     .incbin "../user/target/riscv64gc-unknown-none-elf/release/02power.bin"
+34app_2_end:
+35
+36     .section .data
+37     .global app_3_start
+38     .global app_3_end
+39app_3_start:
+40     .incbin "../user/target/riscv64gc-unknown-none-elf/release/03priv_inst.bin"
+41app_3_end:
+42
+43     .section .data
+44     .global app_4_start
+45     .global app_4_end
+46app_4_start:
+47     .incbin "../user/target/riscv64gc-unknown-none-elf/release/04priv_csr.bin"
+48app_4_end:
 ```
 
 可以看到第 15 行 `.section .data` 开始的五个数据段分别插入了五个应用程序的二进制镜像，并且各自有一对全局符号 `app_*_start, app_*_end` 指示它们的开始和结束位置。而第 3 行 `.align 3` 开始的另一个数据段相当于一个 64 位整数数组。数组中的第一个元素表示应用程序的数量，后面则按照顺序放置每个应用程序的起始地址，最后一个元素放置最后一个应用程序的结束位置。这样每个应用程序的位置都能从该数组中相邻两个元素中得知。这个数组所在的位置同样也由全局符号 `_num_app` 所指示。
@@ -240,28 +240,28 @@ lazy_static = { version = "1.4.0", features = ["spin_no_std"] }
 `AppManager` 的方法中， `print_app_info/get_current_app/move_to_next_app` 都相当简单直接，需要说明的是 `load_app`：
 
 ```rust
-unsafe fn load_app(&self, app_id: usize) {
-    if app_id >= self.num_app {
-        panic!("All applications completed!");
-    }
-    println!("[kernel] Loading app_{}", app_id);
-    // clear icache
-    asm!("fence.i");
-    // clear app area
-    core::slice::from_raw_parts_mut(
-        APP_BASE_ADDRESS as *mut u8,
-        APP_SIZE_LIMIT
-    ).fill(0);
-    let app_src = core::slice::from_raw_parts(
-        self.app_start[app_id] as *const u8,
-        self.app_start[app_id + 1] - self.app_start[app_id]
-    );
-    let app_dst = core::slice::from_raw_parts_mut(
-        APP_BASE_ADDRESS as *mut u8,
-        app_src.len()
-    );
-    app_dst.copy_from_slice(app_src);
-}
+ 1 unsafe fn load_app(&self, app_id: usize) {
+ 2     if app_id >= self.num_app {
+ 3         panic!("All applications completed!");
+ 4     }
+ 5     println!("[kernel] Loading app_{}", app_id);
+ 6     // clear icache
+ 7     asm!("fence.i");
+ 8     // clear app area
+ 9     core::slice::from_raw_parts_mut(
+10         APP_BASE_ADDRESS as *mut u8,
+11         APP_SIZE_LIMIT
+12     ).fill(0);
+13     let app_src = core::slice::from_raw_parts(
+14         self.app_start[app_id] as *const u8,
+15         self.app_start[app_id + 1] - self.app_start[app_id]
+16     );
+17     let app_dst = core::slice::from_raw_parts_mut(
+18         APP_BASE_ADDRESS as *mut u8,
+19         app_src.len()
+20     );
+21     app_dst.copy_from_slice(app_src);
+22 }
 ```
 
 这个方法负责将参数 `app_id` 对应的应用程序的二进制镜像加载到物理内存以 `0x80400000` 起始的位置，这个位置是批处理操作系统和应用程序之间约定的常数地址，回忆上一小节中，我们也调整应用程序的内存布局以同一个地址开头。第 8 行开始，我们首先将一块内存清空，然后找到待加载应用二进制镜像的位置，并将它复制到正确的位置。它本质上是把数据从一块内存复制到另一块内存，从批处理操作系统的角度来看，是将操作系统数据段的一部分数据（实际上是应用程序）复制到了一个可以执行代码的内存区域。在这一点上也体现了冯诺依曼计算机的 *代码即数据* 的特征。

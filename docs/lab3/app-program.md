@@ -58,13 +58,13 @@ extern crate user_lib;
 在 `lib.rs` 中我们定义了用户库的入口点 `_start` ：
 
 ```rust
-#[no_mangle]
-#[link_section = ".text.entry"]
-pub extern "C" fn _start() -> ! {
-    clear_bss();
-    exit(main());
-    panic!("unreachable after sys_exit!");
-}
+1 #[no_mangle]
+2 #[link_section = ".text.entry"]
+3 pub extern "C" fn _start() -> ! {
+4     clear_bss();
+5     exit(main());
+6     panic!("unreachable after sys_exit!");
+7 }
 ```
 
 第 2 行使用 Rust 的宏将 `_start` 这段代码编译后的汇编代码中放在一个名为 `.text.entry` 的代码段中，方便我们在后续链接的时候调整它的位置使得它能够作为用户库的入口。
@@ -74,11 +74,11 @@ pub extern "C" fn _start() -> ! {
 我们还在 `lib.rs` 中看到了另一个 `main` ：
 
 ```rust
-#[linkage = "weak"]
-#[no_mangle]
-fn main() -> i32 {
-    panic!("Cannot find main!");
-}
+1 #[linkage = "weak"]
+2 #[no_mangle]
+3 fn main() -> i32 {
+4     panic!("Cannot find main!");
+5 }
 ```
 
 第 1 行，我们使用 Rust 的宏将其函数符号 `main` 标志为弱链接。这样在最后链接的时候，虽然在 `lib.rs` 和 `bin` 目录下的某个应用程序都有 `main` 符号，但由于 `lib.rs` 中的 `main` 符号是弱链接，链接器会使用 `bin` 目录下的应用主逻辑作为 `main` 。这里我们主要是进行某种程度上的保护，如果在 `bin` 目录下找不到任何 `main` ，那么编译也能够通过，但会在运行时报错。
@@ -133,21 +133,21 @@ fn sys_exit(xstate: usize) -> !;
 在 RISC-V 调用规范中，和函数调用的 ABI 情形类似，约定寄存器 `a0~a6` 保存系统调用的参数， `a0` 保存系统调用的返回值。有些许不同的是寄存器 `a7` 用来传递 syscall ID，这是因为所有的 syscall 都是通过 `ecall` 指令触发的，除了各输入参数之外我们还额外需要一个寄存器来保存要请求哪个系统调用。由于这超出了 Rust 语言的表达能力，我们需要在代码中使用内嵌汇编来完成参数/返回值绑定和 `ecall` 指令的插入：
 
 ```rust
-// user/src/syscall.rs
-use core::arch::asm;
-fn syscall(id: usize, args: [usize; 3]) -> isize {
-    let mut ret: isize;
-    unsafe {
-        asm!(
-            "ecall",
-            inlateout("x10") args[0] => ret,
-            in("x11") args[1],
-            in("x12") args[2],
-            in("x17") id
-        );
-    }
-    ret
-}
+ 1 // user/src/syscall.rs
+ 2 use core::arch::asm;
+ 3 fn syscall(id: usize, args: [usize; 3]) -> isize {
+ 4     let mut ret: isize;
+ 5     unsafe {
+ 6         asm!(
+ 7             "ecall",
+ 8             inlateout("x10") args[0] => ret,
+ 9             in("x11") args[1],
+10             in("x12") args[2],
+11             in("x17") id
+12         );
+13     }
+14     ret
+15 }
 ```
 
 第 3 行，我们将所有的系统调用都封装成 `syscall` 函数，可以看到它支持传入 syscall ID 和 3 个参数。

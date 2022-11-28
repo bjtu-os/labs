@@ -164,40 +164,40 @@ Trap 处理的总体流程如下：首先通过 `__alltraps` 将 Trap 上下文�
 首先是保存 Trap 上下文的 `__alltraps` 的实现：
 
 ```assembly
-# os/src/trap/trap.S
-
-.macro SAVE_GP n
-    sd x\n, \n*8(sp)
-.endm
-
-.align 2
-__alltraps:
-    csrrw sp, sscratch, sp
-    # now sp->kernel stack, sscratch->user stack
-    # allocate a TrapContext on kernel stack
-    addi sp, sp, -34*8
-    # save general-purpose registers
-    sd x1, 1*8(sp)
-    # skip sp(x2), we will save it later
-    sd x3, 3*8(sp)
-    # skip tp(x4), application does not use it
-    # save x5~x31
-    .set n, 5
-    .rept 27
-        SAVE_GP %n
-        .set n, n+1
-    .endr
-    # we can use t0/t1/t2 freely, because they were saved on kernel stack
-    csrr t0, sstatus
-    csrr t1, sepc
-    sd t0, 32*8(sp)
-    sd t1, 33*8(sp)
-    # read user stack from sscratch and save it on the kernel stack
-    csrr t2, sscratch
-    sd t2, 2*8(sp)
-    # set input argument of trap_handler(cx: &mut TrapContext)
-    mv a0, sp
-    call trap_handler
+ 1 # os/src/trap/trap.S
+ 2
+ 3 .macro SAVE_GP n
+ 4     sd x\n, \n*8(sp)
+ 5 .endm
+ 6
+ 7 .align 2
+ 8 __alltraps:
+ 9     csrrw sp, sscratch, sp
+10     # now sp->kernel stack, sscratch->user stack
+11     # allocate a TrapContext on kernel stack
+12     addi sp, sp, -34*8
+13     # save general-purpose registers
+14     sd x1, 1*8(sp)
+15     # skip sp(x2), we will save it later
+16     sd x3, 3*8(sp)
+17     # skip tp(x4), application does not use it
+18     # save x5~x31
+19     .set n, 5
+20     .rept 27
+21         SAVE_GP %n
+22         .set n, n+1
+23     .endr
+24     # we can use t0/t1/t2 freely, because they were saved on kernel stack
+25     csrr t0, sstatus
+26     csrr t1, sepc
+27     sd t0, 32*8(sp)
+28     sd t1, 33*8(sp)
+29     # read user stack from sscratch and save it on the kernel stack
+30     csrr t2, sscratch
+31     sd t2, 2*8(sp)
+32     # set input argument of trap_handler(cx: &mut TrapContext)
+33     mv a0, sp
+34     call trap_handler
 ```
 
 - 第 7 行我们使用 `.align` 将 `__alltraps` 的地址 4 字节对齐，这是 RISC-V 特权级规范的要求；
@@ -225,37 +225,37 @@ __alltraps:
 当 `trap_handler` 返回之后会从调用 `trap_handler` 的下一条指令开始执行，也就是从栈上的 Trap 上下文恢复的 `__restore` ：
 
 ```assembly
-# os/src/trap/trap.S
-
-.macro LOAD_GP n
-    ld x\n, \n*8(sp)
-.endm
-
-__restore:
-    # case1: start running app by __restore
-    # case2: back to U after handling trap
-    mv sp, a0
-    # now sp->kernel stack(after allocated), sscratch->user stack
-    # restore sstatus/sepc
-    ld t0, 32*8(sp)
-    ld t1, 33*8(sp)
-    ld t2, 2*8(sp)
-    csrw sstatus, t0
-    csrw sepc, t1
-    csrw sscratch, t2
-    # restore general-purpuse registers except sp/tp
-    ld x1, 1*8(sp)
-    ld x3, 3*8(sp)
-    .set n, 5
-    .rept 27
-        LOAD_GP %n
-        .set n, n+1
-    .endr
-    # release TrapContext on kernel stack
-    addi sp, sp, 34*8
-    # now sp->kernel stack, sscratch->user stack
-    csrrw sp, sscratch, sp
-    sret
+ 1 # os/src/trap/trap.S
+ 2
+ 3 .macro LOAD_GP n
+ 4     ld x\n, \n*8(sp)
+ 5 .endm
+ 6
+ 7 __restore:
+ 8     # case1: start running app by __restore
+ 9     # case2: back to U after handling trap
+10     mv sp, a0
+11     # now sp->kernel stack(after allocated), sscratch->user stack
+12     # restore sstatus/sepc
+13     ld t0, 32*8(sp)
+14     ld t1, 33*8(sp)
+15     ld t2, 2*8(sp)
+16     csrw sstatus, t0
+17     csrw sepc, t1
+18     csrw sscratch, t2
+19     # restore general-purpuse registers except sp/tp
+20     ld x1, 1*8(sp)
+21     ld x3, 3*8(sp)
+22     .set n, 5
+23     .rept 27
+24         LOAD_GP %n
+25         .set n, n+1
+26     .endr
+27     # release TrapContext on kernel stack
+28     addi sp, sp, 34*8
+29     # now sp->kernel stack, sscratch->user stack
+30     csrrw sp, sscratch, sp
+31     sret
 ```
 
 - 第 10 行比较奇怪我们暂且不管，假设它从未发生，那么 sp 仍然指向内核栈的栈顶。
@@ -274,32 +274,32 @@ __restore:
 Trap 在使用 Rust 实现的 `trap_handler` 函数中完成分发和处理：
 
 ```rust
-// os/src/trap/mod.rs
-
-#[no_mangle]
-pub fn trap_handler(cx: &mut TrapContext) -> &mut TrapContext {
-    let scause = scause::read();
-    let stval = stval::read();
-    match scause.cause() {
-        Trap::Exception(Exception::UserEnvCall) => {
-            cx.sepc += 4;
-            cx.x[10] = syscall(cx.x[17], [cx.x[10], cx.x[11], cx.x[12]]) as usize;
-        }
-        Trap::Exception(Exception::StoreFault) |
-        Trap::Exception(Exception::StorePageFault) => {
-            println!("[kernel] PageFault in application, kernel killed it.");
-            run_next_app();
-        }
-        Trap::Exception(Exception::IllegalInstruction) => {
-            println!("[kernel] IllegalInstruction in application, kernel killed it.");
-            run_next_app();
-        }
-        _ => {
-            panic!("Unsupported trap {:?}, stval = {:#x}!", scause.cause(), stval);
-        }
-    }
-    cx
-}
+ 1 // os/src/trap/mod.rs
+ 2
+ 3 #[no_mangle]
+ 4 pub fn trap_handler(cx: &mut TrapContext) -> &mut TrapContext {
+ 5     let scause = scause::read();
+ 6     let stval = stval::read();
+ 7     match scause.cause() {
+ 8         Trap::Exception(Exception::UserEnvCall) => {
+ 9             cx.sepc += 4;
+10             cx.x[10] = syscall(cx.x[17], [cx.x[10], cx.x[11], cx.x[12]]) as usize;
+11         }
+12         Trap::Exception(Exception::StoreFault) |
+13         Trap::Exception(Exception::StorePageFault) => {
+14             println!("[kernel] PageFault in application, kernel killed it.");
+15             run_next_app();
+16         }
+17         Trap::Exception(Exception::IllegalInstruction) => {
+18             println!("[kernel] IllegalInstruction in application, kernel killed it.");
+19             run_next_app();
+20         }
+21         _ => {
+22             panic!("Unsupported trap {:?}, stval = {:#x}!", scause.cause(), stval);
+23         }
+24     }
+25     cx
+26 }
 ```
 
 - 第 4 行声明返回值为 `&mut TrapContext` 并在第 25 行实际将传入的Trap 上下文 `cx` 原样返回，因此在 `__restore` 的时候 `a0` 寄存器在调用 `trap_handler` 前后并没有发生变化，仍然指向分配 Trap 上下文之后的内核栈栈顶，和此时 `sp` 的值相同，这里的 sp←a0 并不会有问题；
