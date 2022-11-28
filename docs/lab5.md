@@ -137,22 +137,22 @@ pub fn get_time() -> usize {
 `timer` 子模块的 `get_time` 函数可以取得当前 `mtime` 计数器的值；
 
 ```rust
-// os/src/sbi.rs
-
-const SBI_SET_TIMER: usize = 0;
-
-pub fn set_timer(timer: usize) {
-    sbi_call(SBI_SET_TIMER, timer, 0, 0);
-}
-
-// os/src/timer.rs
-
-use crate::config::CLOCK_FREQ;
-const TICKS_PER_SEC: usize = 100;
-
-pub fn set_next_trigger() {
-    set_timer(get_time() + CLOCK_FREQ / TICKS_PER_SEC);
-}
+ 1 // os/src/sbi.rs
+ 2
+ 3 const SBI_SET_TIMER: usize = 0;
+ 4
+ 5 pub fn set_timer(timer: usize) {
+ 6     sbi_call(SBI_SET_TIMER, timer, 0, 0);
+ 7 }
+ 8
+ 9 // os/src/timer.rs
+10
+11 use crate::config::CLOCK_FREQ;
+12 const TICKS_PER_SEC: usize = 100;
+13
+14 pub fn set_next_trigger() {
+15     set_timer(get_time() + CLOCK_FREQ / TICKS_PER_SEC);
+16 }
 ```
 
 - 代码片段第 5 行， `sbi` 子模块有一个 `set_timer` 调用，是一个由 SEE 提供的标准 SBI 接口函数，它可以用来设置 `mtimecmp` 的值。
@@ -212,27 +212,27 @@ match scause.cause() {
 为了避免 S 特权级时钟中断被屏蔽，我们需要在执行第一个应用之前进行一些初始化设置：
 
 ```rust
-// os/src/main.rs
-
-#[no_mangle]
-pub fn rust_main() -> ! {
-    clear_bss();
-    println!("[kernel] Hello, world!");
-    trap::init();
-    loader::load_apps();
-    trap::enable_timer_interrupt();
-    timer::set_next_trigger();
-    task::run_first_task();
-    panic!("Unreachable in rust_main!");
-}
-
-// os/src/trap/mod.rs
-
-use riscv::register::sie;
-
-pub fn enable_timer_interrupt() {
-    unsafe { sie::set_stimer(); }
-}
+ 1 // os/src/main.rs
+ 2
+ 3 #[no_mangle]
+ 4 pub fn rust_main() -> ! {
+ 5     clear_bss();
+ 6     println!("[kernel] Hello, world!");
+ 7     trap::init();
+ 8     loader::load_apps();
+ 9     trap::enable_timer_interrupt();
+10     timer::set_next_trigger();
+11     task::run_first_task();
+12     panic!("Unreachable in rust_main!");
+13 }
+14
+15 // os/src/trap/mod.rs
+16
+17 use riscv::register::sie;
+18
+19 pub fn enable_timer_interrupt() {
+20     unsafe { sie::set_stimer(); }
+21 }
 ```
 
 - 第 9 行设置了 `sie.stie` 使得 S 特权级时钟中断不会被屏蔽；
