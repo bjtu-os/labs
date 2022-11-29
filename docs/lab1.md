@@ -122,7 +122,7 @@ fn main() {
 }
 ```
 
-重新编译执行，你会得到一个报错的程序，出错信息大概长这样：
+重新编译执行，你会得到一个报错的程序，出错信息如下：
 
 ```
 error: `#[panic_handler]` function required, but not found
