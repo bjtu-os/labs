@@ -1,6 +1,6 @@
 # Lab 0 实验环境搭建
 
-**注意**： 本教程是基于 **openEuler 22.03** 操作系统来配置。如果使用 **Ubuntu** 操作系统的话，注意包管理器需要使用`apt`，安装相应包的指令也会发生变化。
+**注意**： 本教程是基于 **openEuler 22.03** 操作系统来进行实验的。如果使用 **Ubuntu** 操作系统的话，注意包管理器需要使用`apt`，安装相应包的指令也会发生变化。但是后续的实验步骤和 **openEuler** 并无太大的区别。
 
 ## 下载 openEuler 操作系统镜像
 
@@ -9,11 +9,20 @@
 - x86 CPU版本地址：https://repo.openeuler.org/openEuler-22.03-LTS/ISO/x86_64/openEuler-22.03-LTS-x86_64-dvd.iso
 - ARM CPU版本地址：https://repo.openeuler.org/openEuler-22.03-LTS/ISO/aarch64/openEuler-22.03-LTS-aarch64-dvd.iso
 
-注意在安装过程中的图形用户界面，设置用户时，要选择 **拥有管理员权限**
+## 安装镜像
+
+首先需要在你的电脑上安装虚拟机，如果已经安装过了就可以跳过此步。
+
+- Windows: 推荐使用 VMware Workstation
+- macOS: 更推荐使用 Parallels Desktop，VMware Fusion 也可以
+
+**注意**：VirtualBox 虚拟机会在后续实验操作中出现问题，不建议使用。
+
+在安装 openEuler 操作系统镜像的过程中，会显示一个图形用户界面来让你进行基础信息的配置，在配置用户信息时，要选择 **拥有管理员权限**，如果不选也可以，但后续调试会比较麻烦。
 
 ## 基础软件环境配置
 
-在实验或练习过程中，会用到一些基本的软件包：
+在实验过程中，会用到一些基本的软件包：
 
 ```shell
 $ sudo dnf groupinstall "Development Tools"
@@ -24,7 +33,7 @@ patchutils bc python3 ninja-build wget xz curl gcc vim
 
 ## Rust 开发环境配置
 
-因为如果使用国内镜像安装的话会出现各种各样的问题，所以我们用官方的安装脚本来安装 Rust 版本管理器 `rustup` 和 Rust 包管理器 `cargo`，如果速度慢就开 VPN：
+经过多次测试，如果使用国内镜像安装的话会出现各种各样的问题，所以我们用官方的安装脚本来安装 Rust 版本管理器 `rustup` 和 Rust 包管理器 `cargo`，如果速度慢就开 VPN：
 
 ```shell
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
@@ -73,7 +82,7 @@ replace-with = 'tuna'
 registry = "https://mirrors.tuna.tsinghua.edu.cn/git/crates.io-index.git"
 ```
 
-按 `esc` 键退出编辑模式，再按 `:wq` 加 **回车** 就可以保存并退出文件了，如果有同学之前没接触过 vim，建议系统性学习一下。
+按 `esc` 键退出编辑模式，再按 `:wq` 加 **回车** 就可以保存并退出文件了，如果有同学之前没接触过 vim 编辑器，建议系统性学习一下。
 
 接下来安装一些 Rust 相关的软件包：
 
