@@ -31,3 +31,7 @@
 ## 参考
 
 本教程内容参考了清华大学操作系统实验课 [rCore](http://rcore-os.cn/rCore-Tutorial-Book-v3/index.html) 。并在其基础之上做了一定程度的修改和完善。
+
+## Contribution
+
+如果在阅读本教程的过程中发现内容有疏漏之处，欢迎提 issue。
