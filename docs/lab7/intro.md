@@ -33,7 +33,7 @@
 
 ## 代码示例
 
-首先 `clone` 或者更新代码仓库。本 Lab 的代码都放在 `code/lab7` 下面：
+在课程仓库的 `code/lab7` 目录下：
 
 ```shell
 $ cd os

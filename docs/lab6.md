@@ -224,7 +224,7 @@ pub fn heap_test() {
 
 ## 代码示例
 
-首先 `clone` 或者更新代码仓库。本 Lab 的代码都放在 `code/lab6` 下面：
+在课程仓库的 `code/lab6` 下：
 
 ```shell
 $ cd os
